@@ -15,7 +15,7 @@ object DeleteHelper {
     val index = "/" + req.build.index()
     val esType = "/" + req.build.`type`()
     val id = "/" + req.build.id() + "/"
-    val url = serviceUrl + index + esType + id + action
+    val url = serviceUrl + index + esType + id 
 
     val lOptQueryParams: List[Option[(String, String)]] = (
       Option(req.build.routing()).map(r => "routing" -> r) ::
@@ -30,7 +30,7 @@ object DeleteHelper {
     val typeList = if (req.build.typeList.isEmpty || req.build.typeList.contains("*")) "" else "/" + req.build.typeList.mkString(",")
     val query = req.build.queryString
 
-    val url = serviceUrl + indices + typeList
+    val url = serviceUrl + indices + typeList + "/_query"
     val lOptQueryParams = (
       Option(req.build.routing()).map(r => "routing" -> r) ::
       Nil)

@@ -1,6 +1,6 @@
   name     := "playLastik"
 
-  version  := "0.90.10.2"
+  version  := "0.90.10.3"
 
   libraryDependencies ++= Seq(
     // Add your project dependencies here

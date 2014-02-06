@@ -1,0 +1,56 @@
+@()
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>Twitter French Media</title>
+        
+        <!-- Stylesheets -->
+        <link rel="stylesheet" media="screen" href="/assets/stylesheets/main.css">
+        <link rel="stylesheet" media="screen" href="/assets/stylesheets/bootstrap-glyphicons.css">
+        <link rel="stylesheet" media="screen" href="/assets/stylesheets/bootstrap.min.css">
+        <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
+    </head>
+    
+    <body ng-app="frenchMedia">
+        
+        <div ng-controller="frenchMediaCtrl">
+			
+		    <div class="container">
+
+      <div class="row row-offcanvas row-offcanvas-right">
+
+        <div >
+          <div>
+            <h1>Hello, world!</h1>
+            <p>This is an example to show the potential of an offcanvas layout pattern in Bootstrap. Try some responsive-range viewport sizes to see it in action.</p>
+          </div>
+          <div class="row">
+          <div ng-repeat="media in medias">
+            	<div class="col-6 col-sm-6 col-lg-4">
+              		<h2>{{media.name}}</h2>
+              		<p><img src="" data-ng-src="{{media.url}}" class="img-responsive img-thumbnail animation-fade" data-imageloaded data-loadedclass="animation-faded"></p>
+            	</div><!--/span-->
+            </div>
+          </div><!--/row-->
+        </div><!--/span-->
+
+  
+    </div><!--/.container-->
+            
+        </div>
+
+        <!-- Scripts placed at the end of the document so the pages load faster -->
+
+        <script src="/assets/javascripts/vendor/jquery-1.10.2.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js"></script>
+        <script src="/assets/javascripts/vendor/angular-deckgrid.js"></script>
+
+        <script src="/assets/javascripts/app.js"></script>
+        <script src="/assets/javascripts/controllers.js"></script>
+        
+
+    </body>
+</html>

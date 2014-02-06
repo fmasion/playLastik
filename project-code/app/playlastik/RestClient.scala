@@ -98,7 +98,7 @@ object RestClient {
     fresp onSuccess {
       case resp => {
         log.debug(s"return code : ${resp.status}")
-        if (resp.status <= 400) {
+        if (resp.status >= 400) {
           log.error("Status : " + resp.status + " " +  resp.body)
         }
       }

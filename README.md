@@ -25,7 +25,7 @@ In your application, add this configuration to the `project/Build.scala` file :
 
 add this dependency for play 2.2.x :
 
-	"playlastik"  % "playlastik_2.10" % "0.90.10.0"
+	"playlastik"  % "playlastik_2.10" % "0.90.10.1"
 
 
 add this resolver :

@@ -90,18 +90,16 @@ object RestClient {
     log.debug(s"verb : ${reqInfo.method} \nurl : ${reqInfo.url} \nbody : ${reqInfo.body} \nparams : ${reqInfo.queryParams}")
     val rh = WS.url(reqInfo.url).withQueryString(reqInfo.queryParams: _*)
     val fresp = reqInfo.method match {
-      case Get => rh get(reqInfo.body)
-      case Post => rh post(reqInfo.body)
-      case Put => rh put(reqInfo.body)
-      case Delete => rh delete(reqInfo.body)
+      case Get => rh get (reqInfo.body)
+      case Post => rh post (reqInfo.body)
+      case Put => rh put (reqInfo.body)
+      case Delete => rh delete (reqInfo.body)
     }
-    if (log.isDebugEnabled) {
-      fresp onSuccess {
-        case resp => {
-          log.debug(s"return code : ${resp.status}")
-          if(resp.status <=400){
-            log.debug(resp.body)
-          }
+    fresp onSuccess {
+      case resp => {
+        log.debug(s"return code : ${resp.status}")
+        if (resp.status <= 400) {
+          log.error("Status : " + resp.status + " " +  resp.body)
         }
       }
     }
@@ -111,15 +109,14 @@ object RestClient {
     fresp
 
   }
-  
-  object Admin{
-    def stats:Future[StatsResponse]= {
-	  doCall(RequestInfo(Get, (serviceUrl + "/_stats"), "")).map{r=>
-	    val jbody = Json.parse(r.body)
-	    jbody.as[StatsResponse]
-	  }
+
+  object Admin {
+    def stats: Future[StatsResponse] = {
+      doCall(RequestInfo(Get, (serviceUrl + "/_stats"), "")).map { r =>
+        val jbody = Json.parse(r.body)
+        jbody.as[StatsResponse]
+      }
     }
   }
-  
 
 }

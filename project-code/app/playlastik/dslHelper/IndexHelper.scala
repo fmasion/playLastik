@@ -23,7 +23,6 @@ object IndexHelper {
       req.oVersionType.map(vt => "version_type" -> vt) ::
       //req.oOpType.map(t => "op_type" -> t) ::
       req.oRouting.map(r => "routing" -> r) ::
-      req.oPercolate.map(p => "percolate" -> p) ::
       req.oTtl.map(t => "ttl" -> (""+t)) ::
       req.oTimeStamp.map(t => "timestamp" -> t) ::
       req.oRefresh.map(r => "refresh" -> (""+r)) ::    
@@ -55,7 +54,6 @@ object IndexHelper {
       bulk.oVersion.map(v => ("_version" -> JsNumber(v))) ::
       bulk.oVersionType.map(vt => ("_version_type" -> JsString(vt))) ::
       bulk.oRouting.map(r => ("_routing" -> JsString(r))) ::
-      bulk.oPercolate.map(p => ("_percolate" -> JsString(p))) ::
       bulk.oRefresh.map(r => ("_refresh" -> JsBoolean(r))) ::
       bulk.oTtl.map(t => ("_ttl" -> JsNumber(t))) ::
       bulk.oTimeStamp.map(t => "_timestamp" -> JsString(t)) ::

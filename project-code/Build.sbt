@@ -1,10 +1,10 @@
   name     := "playLastik"
 
-  version  := "0.90.10.3"
+  version  := "1.2.1.1"
 
   libraryDependencies ++= Seq(
     // Add your project dependencies here
-    "com.sksamuel.elastic4s" % "elastic4s_2.10" % "0.90.10.0" 
+    "com.sksamuel.elastic4s" % "elastic4s_2.10" % "1.2.1.1" 
   )
 
   play.Project.playScalaSettings

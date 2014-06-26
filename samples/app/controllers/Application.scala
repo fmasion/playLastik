@@ -12,9 +12,9 @@ import play.api.libs.iteratee._
 import models._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import playlastik.RestClient
-//import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s._
 import com.sksamuel.elastic4s.ElasticDsl._
+import play.api.Logger
 
 object Application extends Controller {
 
@@ -22,10 +22,13 @@ object Application extends Controller {
   val accessToken = RequestToken("485841773-pswJ0HSC8bFbChrdsypebPyBt5KWwaVm3rE3joi5", "PsOrkwszkNldRJtfV8Stk9mGm0wVabSaJ3GmcJieKuS4P")
   val url = "https://stream.twitter.com/1.1/statuses/filter.json?" + "track=foot%2Csport%2Cpleasure" //"locations=-6,41,10,51" // + "track=mooc%2Celearning%2Ccourse"
 
+  val log = Logger("app")
+  
   /** system-wide channels / enumerators for attaching SSE streams to clients*/
   val (jsonMediasOut, jsonTweetsChannel) = Concurrent.broadcast[JsValue]
 
   def home = Action {
+    log.error("INDEX ")
     Ok(views.html.index())
   }
 
@@ -43,8 +46,11 @@ object Application extends Controller {
         println("\n" + chunkString + "\n")
       }
 
+      log.error("chuncked JSON " + chunkString)
       val json = Json.parse(chunkString)
+      log.error("JSON " + json)
       val tweet = json.asOpt[Tweet]
+      log.error("TWEET " + tweet)
       tweet.map(indexIt)
       if (!tweet.isDefined){
         println(json.validate[Tweet])
@@ -68,7 +74,7 @@ object Application extends Controller {
   }
   
   def indexIt(tweet:Tweet) = {
-    val rep = RestClient.index { index into "monindex/testmonType" id tweet.id_str source PlayJsonSource(tweet) }
+    val rep = RestClient.index { index into "monindex/testmonType" id tweet.id_str doc PlayJsonSource(tweet) }
     rep.map(println)
  }
 

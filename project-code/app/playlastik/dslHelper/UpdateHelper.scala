@@ -20,7 +20,6 @@ object UpdateHelper {
     // handle parent / operation / routing / version in query parameter
     val lOptQueryParams: List[Option[(String, String)]] = (
       req.oRouting.map(r => "routing" -> r) ::
-      req.oPercolate.map(p => "percolate" -> p) ::
       req.oRefresh.map(r => "refresh" -> ("" + r)) ::
       req.oFields.map(t => "fields" -> ("" + t)) ::
       req.oRetryOnConflict.map(t => "retry_on_conflict" -> ("" + t)) ::
@@ -54,7 +53,6 @@ object UpdateHelper {
       Option("_type" -> JsString(bulk.build.`type`())) ::
       bulk.oId.map(id => ("_id" -> JsString(id))) ::
       bulk.oRouting.map(r => ("_routing" -> JsString(r))) ::
-      bulk.oPercolate.map(p => ("_percolate" -> JsString(p))) ::
       bulk.oRefresh.map(r => ("_refresh" -> JsBoolean(r))) ::
       bulk.oRetryOnConflict.map(t => ("_ttl" -> JsNumber(t))) ::
       Nil)

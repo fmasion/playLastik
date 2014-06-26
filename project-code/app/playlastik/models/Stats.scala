@@ -1,7 +1,7 @@
 package playlastik.models
 import play.api.libs.json._
 
-case class StatsResponse(ok: Boolean, _shards: Shards, _all: Agregations, indices: Map[String, Agregations]){
+case class StatsResponse(_shards: Shards, _all: Agregations, indices: Map[String, Agregations]){
   def getIndicesName :List[String] = {
     indices.keys.toList
   }
@@ -13,10 +13,10 @@ case class Shards(total: Double, successful: Double, failed: Double)
 case class Stat(docs: Option[Docs], store: Option[Store], indexing: Option[Indexing], get: Option[Get], search: Option[Search])
 
 case class Docs(count: Double, deleted: Double)
-case class Store(size: String, size_in_bytes: Double, throttle_time: String, throttle_time_in_millis: Double)
-case class Indexing(index_total: Double, index_time: String, index_time_in_millis: Double, index_current: Double, delete_total: Double, delete_time: String, delete_time_in_millis: Double, delete_current: Double)
-case class Get(total: Double, get_time: String, time_in_millis: Double, exists_total: Double, exists_time: String, exists_time_in_millis: Double, missing_total: Double, missing_time: String, missing_time_in_millis: Double, current: Double)
-case class Search(open_contexts: Double, query_total: Double, query_time: String, query_time_in_millis: Double, query_current: Double, fetch_total: Double, fetch_time: String, fetch_time_in_millis: Double, fetch_current: Double)
+case class Store(size_in_bytes: Double, throttle_time_in_millis: Double)
+case class Indexing(index_total: Double, index_time_in_millis: Double, index_current: Double, delete_total: Double, delete_time_in_millis: Double, delete_current: Double)
+case class Get(total: Double, time_in_millis: Double, exists_total: Double, exists_time_in_millis: Double, missing_total: Double, missing_time_in_millis: Double, current: Double)
+case class Search(open_contexts: Double, query_total: Double, query_time_in_millis: Double, query_current: Double, fetch_total: Double, fetch_time_in_millis: Double, fetch_current: Double)
 
 object Search {
   implicit val searchformat = Json.format[Search]

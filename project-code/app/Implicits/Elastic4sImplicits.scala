@@ -1,7 +1,6 @@
 package com.sksamuel.elastic4s
 
 import play.api.libs.json.Writes
-import com.sksamuel.elastic4s.source.Source
 //import scala.collection.JavaConversions._
 
 object Implicits {
@@ -23,7 +22,6 @@ object Implicits {
     private def tmpVersionType: Option[String] = Option(that.build.versionType().name().toLowerCase()).filter(s => !s.isEmpty())
     def oVersionType: Option[String] = for (v <- oVersion; t <- tmpVersionType) yield (t)
     def oRouting: Option[String] = Option(that.build.routing()).filter(s => !s.isEmpty())
-    def oPercolate: Option[String] = Option(that.build.percolate()).filter(s => !s.isEmpty())
     def oRefresh: Option[Boolean] = Option(that.build.refresh()).filter(b => b)
     def oTtl: Option[Long] = Option(that.build.ttl()).filter(s => s != -1L)
     def oTimeStamp: Option[String] = Option(that.build.timestamp()).filter(s => !s.isEmpty())
@@ -34,7 +32,6 @@ object Implicits {
   implicit class UpdateDefinitionOps(val that: com.sksamuel.elastic4s.ElasticDsl.UpdateDefinition) extends AnyVal {
     def oId: Option[String] = Option(that.build.id()).filter(s => !s.isEmpty())
     def oRouting: Option[String] = Option(that.build.routing()).filter(s => !s.isEmpty())
-    def oPercolate: Option[String] = Option(that.build.percolate()).filter(s => !s.isEmpty())
     def oRefresh: Option[Boolean] = Option(that.build.refresh()).filter(b => b)
     def oFields: Option[String] = if (that.build.fields().isEmpty) None else Some(that.build.fields().mkString(","))
     def oScript: Option[String] = Option(that.build.script()).filter(s => !s.isEmpty())

@@ -1,9 +1,9 @@
 package com.sksamuel.elastic4s
 
 import play.api.libs.json._
-import com.sksamuel.elastic4s.source.Source
+import com.sksamuel.elastic4s.source.DocumentSource
 
-class PlayJsonSource[T](clazz:T)(implicit write:Writes[T]) extends Source  {
+class PlayJsonSource[T](clazz:T)(implicit write:Writes[T]) extends DocumentSource  {
 	def json = Json.toJson(clazz).toString
 }
 

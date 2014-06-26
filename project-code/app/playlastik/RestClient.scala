@@ -31,7 +31,7 @@ object RestClient {
 
   val log = Logger("playlastik.RestClient")
   val serviceUrl = Play.configuration.getString("playLastiK.url").getOrElse("http://localhost:9200")
-  val authentificationName = Play.configuration.getString("playLastiK.authentication").getOrElse("NONE")
+  val authentificationName = Play.configuration.getString("playLastiK.authentication.scheme").getOrElse("NONE")
   val user = Play.configuration.getString("playLastiK.authentication.user").getOrElse("")
   val pass = Play.configuration.getString("playLastiK.authentication.pass").getOrElse("")
 

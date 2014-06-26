@@ -25,11 +25,15 @@ import scala.util.Success
 import scala.util.Failure
 import playlastik.models.StatsResponse
 import playlastik.models.IndexSuccess
+import com.ning.http.client.Realm.AuthScheme
 
 object RestClient {
 
   val log = Logger("playlastik.RestClient")
   val serviceUrl = Play.configuration.getString("playLastiK.url").getOrElse("http://localhost:9200")
+  val authentificationName = Play.configuration.getString("playLastiK.authentication").getOrElse("NONE")
+  val user = Play.configuration.getString("playLastiK.authentication.user").getOrElse("")
+  val pass = Play.configuration.getString("playLastiK.authentication.pass").getOrElse("")
 
   def execute(req: SearchDefinition) = search(req)
   def execute(req: IndexDefinition) = index(req)
@@ -88,7 +92,11 @@ object RestClient {
 
   def doCall(reqInfo: RequestInfo): Future[Response] = {
     log.debug(s"verb : ${reqInfo.method} \nurl : ${reqInfo.url} \nbody : ${reqInfo.body} \nparams : ${reqInfo.queryParams}")
-    val rh = WS.url(reqInfo.url).withQueryString(reqInfo.queryParams: _*)
+    val rh = if(authentificationName.equalsIgnoreCase("NONE")){
+      WS.url(reqInfo.url).withQueryString(reqInfo.queryParams: _*)
+    }else{
+      WS.url(reqInfo.url).withQueryString(reqInfo.queryParams: _*).withAuth(user, pass, getAuthentificationModel(authentificationName))
+    }
     val fresp = reqInfo.method match {
       case Get => rh get (reqInfo.body)
       case Post => rh post (reqInfo.body)
@@ -108,6 +116,17 @@ object RestClient {
     }
     fresp
 
+  }
+  
+  def getAuthentificationModel(modelName: String) ={
+    modelName match{
+      case "BASIC" => AuthScheme.BASIC
+      case "DIGEST" => AuthScheme.DIGEST
+      case "KERBEROS" => AuthScheme.KERBEROS
+      case "NTLM" => AuthScheme.NTLM
+      case "SPNEGO" => AuthScheme.SPNEGO
+      case _  => AuthScheme.NONE
+    }
   }
 
   object Admin {

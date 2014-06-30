@@ -37,6 +37,8 @@ object RestClient {
 
   def execute(req: SearchDefinition) = search(req)
   def execute(req: IndexDefinition) = index(req)
+  def execute(req: GetDefinition) = get(req)
+
 
   //    def deleteIndex(deleteIndex: DeleteIndexDefinition)(implicit duration: Duration): DeleteIndexResponse =
   //      ??? //Await.result(client.deleteIndex(deleteIndex), duration)
@@ -59,7 +61,7 @@ object RestClient {
   def getSource(req: GetDefinition) = get(req, true)
 
   def get(req: GetDefinition, source: Boolean) = {
-    val reqInfo = GetHelper.getRequestInfo(serviceUrl, req)
+    val reqInfo = GetHelper.getRequestInfo(serviceUrl, req, source)
     doCall(reqInfo)
   }
 

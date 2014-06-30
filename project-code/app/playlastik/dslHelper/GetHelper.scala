@@ -10,12 +10,12 @@ import playlastik.Get
 object GetHelper {
   
   def getRequestInfo(serviceUrl: String, req: GetDefinition, source:Boolean=false): RequestInfo = {
-      val index = "/" + req.build.index()
+    val index = "/" + req.build.index()
     val esType = "/" + req.build.`type`()
     val id = "/" + req.build.id()
     val url = serviceUrl + index + esType + id + (if (source) ("/_source") else "")
     
-    val fields = req.build.fields()
+    val ofields = Option(req.build.fields())
 
     // handle parent / operation / routing / version in query parameter
     val lOptQueryParams: List[Option[(String, String)]] = (
@@ -24,12 +24,11 @@ object GetHelper {
 
     val queryParams = lOptQueryParams flatMap (_.toList)
 
-    val queryParamsWithFields = if (fields.isEmpty) {
+    val queryParamsWithFields = if (ofields.filterNot(_.isEmpty).isEmpty) {
       queryParams
     } else {
-      ("fields" -> fields.mkString(",")) :: queryParams
+      ("fields" -> ofields.get.mkString(",")) :: queryParams
     }
-    
     RequestInfo(Get, url,"", queryParamsWithFields)
   } 
 

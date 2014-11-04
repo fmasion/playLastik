@@ -29,7 +29,6 @@ object Application extends Controller {
   val (jsonMediasOut, jsonTweetsChannel) = Concurrent.broadcast[JsValue]
 
   def home = Action {
-    log.error("INDEX ")
     Ok(views.html.index())
   }
 
@@ -47,11 +46,11 @@ object Application extends Controller {
         println("\n" + chunkString + "\n")
       }
 
-      log.error("chuncked JSON " + chunkString)
+      log.debug("chuncked JSON " + chunkString)
       val json = Json.parse(chunkString)
-      log.error("JSON " + json)
+      log.debug("JSON " + json)
       val tweet = json.asOpt[Tweet]
-      log.error("TWEET " + tweet)
+      log.debug("TWEET " + tweet)
       tweet.map(indexIt)
       if (!tweet.isDefined){
         println(json.validate[Tweet])

@@ -1,33 +1,18 @@
 package playlastik
 
-import org.elasticsearch.action.ActionRequestBuilder
-import com.sksamuel.elastic4s.RequestDefinition
-import org.elasticsearch.action.ActionResponse
-import org.elasticsearch.action.ActionRequest
-import scala.concurrent.Await
-import com.sksamuel.elastic4s._
 import com.sksamuel.elastic4s.ElasticDsl._
-import play.api.libs.ws.Response
-import play.api.Logger
-import play.api._
-import play.api.Play.current
-import com.sksamuel.elastic4s.Implicits._
-import play.api.libs.ws.Implicits._
-import play.api.libs.ws.WS
-import scala.concurrent.Future
-import org.elasticsearch.action.index.IndexRequest
-import org.elasticsearch.action.deletebyquery.QueryRequestImplicit._
-import play.api.libs.json._
-import playlastik.dslHelper._
-import playlastik._
+import com.sksamuel.elastic4s._
+import play.api.{Logger, _}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import scala.util.Success
-import scala.util.Failure
-import playlastik.models.StatsResponse
-import playlastik.models.IndexSuccess
-import com.ning.http.client.Realm.AuthScheme
+import play.api.libs.json._
+import play.api.libs.ws.{WSAuthScheme, WSResponse, WS}
+import playlastik.dslHelper._
+import playlastik.models.{IndexSuccess, StatsResponse}
+
+import scala.concurrent.Future
 
 object RestClient {
+  implicit val app = play.api.Play.current
 
   val log = Logger("playlastik.RestClient")
   val serviceUrl = Play.configuration.getString("playLastiK.url").getOrElse("http://localhost:9200")
@@ -58,7 +43,7 @@ object RestClient {
     doCall(reqInfo)
   }
 
-  def getSource(req: GetDefinition) = get(req, true)
+  def getSource(req: GetDefinition) = get(req=req, source=true)
 
   def get(req: GetDefinition, source: Boolean) = {
     val reqInfo = GetHelper.getRequestInfo(serviceUrl, req, source)
@@ -71,7 +56,7 @@ object RestClient {
   }
 
   // TODO Future[Response]
-  def search(req: SearchDefinition): Future[Response] = {
+  def search(req: SearchDefinition): Future[WSResponse] = {
     val reqInfo = SearchHelper.getRequestInfo(serviceUrl, req)
     doCall(reqInfo)
   }
@@ -92,18 +77,18 @@ object RestClient {
     doCall(reqInfo)
   }
 
-  def doCall(reqInfo: RequestInfo): Future[Response] = {
+  def doCall(reqInfo: RequestInfo): Future[WSResponse] = {
     log.debug(s"verb : ${reqInfo.method} \nurl : ${reqInfo.url} \nbody : ${reqInfo.body} \nparams : ${reqInfo.queryParams}")
     val rh = if(authentificationName.equalsIgnoreCase("NONE")){
-      WS.url(reqInfo.url).withQueryString(reqInfo.queryParams: _*)
+      WS.url(reqInfo.url)(app).withQueryString(reqInfo.queryParams: _*)
     }else{
-      WS.url(reqInfo.url).withQueryString(reqInfo.queryParams: _*).withAuth(user, pass, getAuthentificationModel(authentificationName))
+      WS.url(reqInfo.url)(app).withQueryString(reqInfo.queryParams: _*).withAuth(user, pass, getAuthentificationModel(authentificationName))
     }
     val fresp = reqInfo.method match {
-      case Get => rh get (reqInfo.body)
-      case Post => rh post (reqInfo.body)
-      case Put => rh put (reqInfo.body)
-      case Delete => rh delete (reqInfo.body)
+      case Get => rh.withBody(reqInfo.body).get()
+      case Post => rh.post(reqInfo.body)
+      case Put => rh.put(reqInfo.body)
+      case Delete => rh.withBody(reqInfo.body).delete()
     }
     fresp onSuccess {
       case resp => {
@@ -122,12 +107,12 @@ object RestClient {
   
   def getAuthentificationModel(modelName: String) ={
     modelName match{
-      case "BASIC" => AuthScheme.BASIC
-      case "DIGEST" => AuthScheme.DIGEST
-      case "KERBEROS" => AuthScheme.KERBEROS
-      case "NTLM" => AuthScheme.NTLM
-      case "SPNEGO" => AuthScheme.SPNEGO
-      case _  => AuthScheme.NONE
+      case "BASIC" => WSAuthScheme.BASIC
+      case "DIGEST" => WSAuthScheme.DIGEST
+      case "KERBEROS" => WSAuthScheme.KERBEROS
+      case "NTLM" => WSAuthScheme.NTLM
+      case "SPNEGO" => WSAuthScheme.SPNEGO
+      case _  => WSAuthScheme.NONE
     }
   }
 

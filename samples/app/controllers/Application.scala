@@ -6,7 +6,7 @@ import play.api.libs.json._
 import play.api.libs.EventSource
 import play.api.libs.oauth.ConsumerKey
 import play.api.libs.oauth.RequestToken
-import play.api.libs.ws.WS
+import play.api.libs.ws._
 import play.api.libs.oauth.OAuthCalculator
 import play.api.libs.iteratee._
 import models._
@@ -15,6 +15,7 @@ import playlastik.RestClient
 import com.sksamuel.elastic4s._
 import com.sksamuel.elastic4s.ElasticDsl._
 import play.api.Logger
+import play.api.Play.current
 
 object Application extends Controller {
 
@@ -23,7 +24,7 @@ object Application extends Controller {
   val url = "https://stream.twitter.com/1.1/statuses/filter.json?" + "track=foot%2Csport%2Cpleasure" //"locations=-6,41,10,51" // + "track=mooc%2Celearning%2Ccourse"
 
   val log = Logger("app")
-  
+
   /** system-wide channels / enumerators for attaching SSE streams to clients*/
   val (jsonMediasOut, jsonTweetsChannel) = Concurrent.broadcast[JsValue]
 
@@ -72,11 +73,10 @@ object Application extends Controller {
     val fsearch = RestClient.search { search in "monindex" types "testmonType" query term start 0 limit 10 }
     fsearch.map(r => Ok(r.body))
   }
-  
+
   def indexIt(tweet:Tweet) = {
     val rep = RestClient.index { index into "monindex/testmonType" id tweet.id_str doc PlayJsonSource(tweet) }
     rep.map(println)
  }
 
 }
-

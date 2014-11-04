@@ -1,9 +1,7 @@
 package playlastik
 
-import com.ning.http.client.Realm.AuthScheme
 import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s._
-import play.api.Play.current
 import play.api.{Logger, _}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json._
@@ -14,6 +12,7 @@ import playlastik.models.{IndexSuccess, StatsResponse}
 import scala.concurrent.Future
 
 object RestClient {
+  implicit val app = play.api.Play.current
 
   val log = Logger("playlastik.RestClient")
   val serviceUrl = Play.configuration.getString("playLastiK.url").getOrElse("http://localhost:9200")
@@ -81,9 +80,9 @@ object RestClient {
   def doCall(reqInfo: RequestInfo): Future[WSResponse] = {
     log.debug(s"verb : ${reqInfo.method} \nurl : ${reqInfo.url} \nbody : ${reqInfo.body} \nparams : ${reqInfo.queryParams}")
     val rh = if(authentificationName.equalsIgnoreCase("NONE")){
-      WS.url(reqInfo.url).withQueryString(reqInfo.queryParams: _*)
+      WS.url(reqInfo.url)(app).withQueryString(reqInfo.queryParams: _*)
     }else{
-      WS.url(reqInfo.url).withQueryString(reqInfo.queryParams: _*).withAuth(user, pass, getAuthentificationModel(authentificationName))
+      WS.url(reqInfo.url)(app).withQueryString(reqInfo.queryParams: _*).withAuth(user, pass, getAuthentificationModel(authentificationName))
     }
     val fresp = reqInfo.method match {
       case Get => rh.withBody(reqInfo.body).get()

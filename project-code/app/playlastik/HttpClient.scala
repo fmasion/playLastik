@@ -6,8 +6,7 @@ import play.api.Play.current
 import play.api.libs.ws.WS
 import scala.concurrent.Future
 import play.api.libs.json._
-import play.api.libs.ws.Response
-import play.api.libs.ws.Implicits._
+import play.api.libs.ws.WSResponse
 
 object HttpClient {
 
@@ -33,7 +32,7 @@ object HttpClient {
      * @param name The name of the index.
      * @param settings Optional settings in JsValue Format
      */
-    def createIndex(name: String, settings: Option[JsValue] = None): Future[Response] = {
+    def createIndex(name: String, settings: Option[JsValue] = None): Future[WSResponse] = {
       val url = serviceUrl + s"/${name}/"
       settings match {
         case Some(s) => WS.url(url).put(s)
@@ -46,7 +45,7 @@ object HttpClient {
      *
      * @param name The name of the index to delete.
      */
-    def deleteIndex(name: String): Future[Response] = {
+    def deleteIndex(name: String): Future[WSResponse] = {
       val url = serviceUrl + s"/${name}"
       WS.url(url).delete
     }
@@ -77,7 +76,7 @@ object HttpClient {
      * @param data The document to index, which should be a JSON string
      * @param refresh If true then ElasticSearch will refresh the index so that the indexed document is immediately searchable.
      */
-    def index(index: String, `type`: String, id: Option[String] = None, data: JsValue, refresh: Boolean = false): Future[Response] = {
+    def index(index: String, `type`: String, id: Option[String] = None, data: JsValue, refresh: Boolean = false): Future[WSResponse] = {
       // XXX Need to add parameters: version, op_type, routing, parents & children,
       // timestamp, ttl, percolate, timeout, replication, consistency
 
@@ -110,9 +109,9 @@ object HttpClient {
      * @param type The type of the document.
      * @param id The id of the document.
      */
-    def get(index: String, `type`: String, id: String): Future[Response] = {
+    def get(index: String, `type`: String, id: String): Future[WSResponse] = {
       val url = serviceUrl + s"/${index}/${`type`}/${id}"
-      WS.url(url).get
+      WS.url(url).get()
     }
 
     /**
@@ -122,11 +121,11 @@ object HttpClient {
      * @param type The type of document to delete.
      * @param id The ID of the document.
      */
-    def delete(index: String, `type`: String, id: String): Future[Response] = {
+    def delete(index: String, `type`: String, id: String): Future[WSResponse] = {
       // XXX Need to add parameters: version, routing, parent, replication,
       // consistency, refresh
       val url = serviceUrl + s"/${index}/${`type`}/${id}/"
-      WS.url(url).delete
+      WS.url(url).delete()
     }
 
     /**
@@ -136,10 +135,10 @@ object HttpClient {
      * @param types A sequence of types for which mappings will be fetched.
      * @param query The query to count documents from.
      */
-    def deleteByQuery(indices: Seq[String], `types`: Seq[String], query: JsValue): Future[Response] = {
+    def deleteByQuery(indices: Seq[String], `types`: Seq[String], query: JsValue): Future[WSResponse] = {
       // XXX Need to add parameters: df, analyzer, default_operator
       val url = serviceUrl + s"""/${indices.mkString(",")}/${types.mkString(",")}/_query/"""
-      WS.url(url).delete(query)
+      WS.url(url).withBody(query).delete()
     }
 
   }
@@ -157,7 +156,7 @@ object HttpClient {
      * { "actions": [{ "add": { "index": "index1", "alias": "alias1" } }, { "add": { "index": "index2", "alias": "alias2" } }]
      *
      */
-    def createAlias(actions: JsValue): Future[Response] = {
+    def createAlias(actions: JsValue): Future[WSResponse] = {
       val url = serviceUrl + """/_aliases"""
       WS.url(url).post(actions)
     }
@@ -168,9 +167,9 @@ object HttpClient {
      * @param index The name of the index.
      * @param alias The name of the alias.
      */
-    def deleteAlias(index: String, alias: String): Future[Response] = {
+    def deleteAlias(index: String, alias: String): Future[WSResponse] = {
       val url = serviceUrl + s"/${index}/_alias/${alias}"
-      WS.url(url).delete
+      WS.url(url).delete()
     }
 
     /**
@@ -179,9 +178,9 @@ object HttpClient {
      * @param index Optional name of an index. If no index is supplied, then the query will check all indices.
      * @param query The name of alias to return in the response. Like the index option, this option supports wildcards and the option the specify multiple alias names separated by a comma.
      */
-    def getAliases(index: Option[String], query: String = "*"): Future[Response] = {
+    def getAliases(index: Option[String], query: String = "*"): Future[WSResponse] = {
       val url = index.map(i => serviceUrl + s"/${i}").getOrElse(serviceUrl) + s"/_alias/${query}"
-      WS.url(url).get
+      WS.url(url).get()
     }
 
   }
@@ -193,7 +192,7 @@ object HttpClient {
      * @param index The index to search
      * @param query The query to execute.
      */
-    def search(index: String, query: JsValue): Future[Response] = {
+    def search(index: String, query: JsValue): Future[WSResponse] = {
       val url = serviceUrl + s"/${index}/_search"
       WS.url(url).post(query)
     }
@@ -205,9 +204,9 @@ object HttpClient {
      * @param types A sequence of types for which mappings will be fetched.
      * @param query The query to count documents from.
      */
-    def count(indices: Seq[String], types: Seq[String], query: JsValue): Future[Response] = {
+    def count(indices: Seq[String], types: Seq[String], query: JsValue): Future[WSResponse] = {
       val url = serviceUrl + s"/${indices.mkString(",")}/${types.mkString(",")}/_count"
-      WS.url(url).get(query)
+      WS.url(url).withBody(query).get()
     }
 
     /**
@@ -218,7 +217,7 @@ object HttpClient {
      * @param query The query.
      * @param explain If true, then the response will contain more detailed information about the query.
      */
-    def validate(index: String, `type`: Option[String] = None, query: JsValue, explain: Boolean = false): Future[Response] = {
+    def validate(index: String, `type`: Option[String] = None, query: JsValue, explain: Boolean = false): Future[WSResponse] = {
       val url = serviceUrl + s"/${index + `type`.map(t => s"/${t}").getOrElse("")}/_validate/query"
       WS.url(url).post(query)
     }
@@ -232,7 +231,7 @@ object HttpClient {
      * @param query The query.
      * @param explain If true, then the response will contain more detailed information about the query.
      */
-    def explain(index: String, `type`: String, id: String, query: JsValue): Future[Response] = {
+    def explain(index: String, `type`: String, id: String, query: JsValue): Future[WSResponse] = {
       // XXX Lots of params to add
       val url = serviceUrl + s"/${index}/${`type`}/${id}/_explain"
       WS.url(url).post(query)
@@ -249,7 +248,7 @@ object HttpClient {
      * @param type The type name to which the mappings will be applied.
      * @param body The mapping.
      */
-    def putMapping(indices: Seq[String], `type`: String, body: String): Future[Response] = {
+    def putMapping(indices: Seq[String], `type`: String, body: String): Future[WSResponse] = {
       val url = serviceUrl + s"${indices.mkString(",")}/${`type`}/_mapping"
       WS.url(url).put(body)
     }
@@ -260,9 +259,9 @@ object HttpClient {
      * @param indices A sequence of index names for which mappings will be fetched.
      * @param types A sequence of types for which mappings will be fetched.
      */
-    def getMapping(indices: Seq[String], types: Seq[String]): Future[Response] = {
+    def getMapping(indices: Seq[String], types: Seq[String]): Future[WSResponse] = {
       val url = serviceUrl + s"${indices.mkString(",")}/${types.mkString(",")}/_mapping"
-      WS.url(url).get
+      WS.url(url).get()
     }
   }
 
@@ -280,7 +279,7 @@ object HttpClient {
     def health(
       indices: Seq[String] = Seq.empty[String], level: Option[String] = None,
       waitForStatus: Option[String] = None, waitForRelocatingShards: Option[String] = None,
-      waitForNodes: Option[String] = None, timeout: Option[String] = None): Future[Response] = {
+      waitForNodes: Option[String] = None, timeout: Option[String] = None): Future[WSResponse] = {
       val url = serviceUrl + """_cluster/health/${indices.mkString(",")}"""
       val reqHolder = WS.url(url)
 
@@ -294,7 +293,7 @@ object HttpClient {
             r.withQueryString(nameAndParam._1 -> p)
           }).getOrElse(r)
         })
-      reqHolderWithParam.get
+      reqHolderWithParam.get()
     }
 
     /**
@@ -307,7 +306,7 @@ object HttpClient {
      * @param merge merge stats.
      * @param warmer Warmer statistics.
      */
-    def stats(indices: Seq[String] = Seq(), clear: Boolean = false, refresh: Boolean = false, flush: Boolean = false, merge: Boolean = false, warmer: Boolean = false): Future[Response] = {
+    def stats(indices: Seq[String] = Seq(), clear: Boolean = false, refresh: Boolean = false, flush: Boolean = false, merge: Boolean = false, warmer: Boolean = false): Future[WSResponse] = {
       val url = indices match {
         case Nil => serviceUrl + """/_stats"""
         case _ => serviceUrl + s"""/${indices.mkString(",")}/_stats"""
@@ -324,7 +323,7 @@ object HttpClient {
      *
      * @param name The name of the index to verify.
      */
-    def verifyIndex(name: String): Future[Response] = {
+    def verifyIndex(name: String): Future[WSResponse] = {
       val url = serviceUrl + s"/${name}"
       WS.url(url).head
     }
@@ -334,7 +333,7 @@ object HttpClient {
      *
      * @param name The name of the type to verify.
      */
-    def verifyType(index: String, `type`: String): Future[Response] = {
+    def verifyType(index: String, `type`: String): Future[WSResponse] = {
       val url = serviceUrl + s"/${index}/${`type`}"
       WS.url(url).head
     }

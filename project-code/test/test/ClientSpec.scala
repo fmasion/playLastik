@@ -1,8 +1,10 @@
-package test
+package playlastik.test
 
 import org.specs2.mutable._
 import org.specs2.runner._
 import org.junit.runner._
+import org.specs2.specification.BeforeExample
+import play.api.Logger
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import playlastik._
@@ -10,37 +12,29 @@ import playlastik.HttpClient
 import playlastik.plugin.PlayLastiKPlugin
 import play.api.test._
 import play.api.test.Helpers._
+import play.api.test.WithApplication
 
 @RunWith(classOf[JUnitRunner])
-class HttpClientSpec extends Specification {
+class HttpClientSpec extends Specification with PlaySpecification with WithExternalES {
+  val log = Logger("HttpClientSpec")
+  step(startES)
 
-//  sequential
-//
-//  "Client" should {
-//    running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-//      val app = play.api.Play.current
-//      val mockES = new PlayLastiKPlugin(app)
-//      mockES.onStart
-//
-//      "fail usefully" in {
-//
-//        val res = Await.result(HttpClient.System.verifyIndex("foobarbaz"), Duration(1, "second"))
-//        res.status must beEqualTo(404)
-//
-//        1 must beEqualTo(1)
-//      }
+  sequential
 
-      //    "create and delete indexes" in {
-      //      val HttpClient = new HttpClient("http://localhost:9200")
-      //
-      //      Await.result(HttpClient.createIndex(name = "foo"), Duration(1, "second")).getResponseBody must contain("acknowledged")
-      //
-      //      Await.result(HttpClient.verifyIndex("foo"), Duration(1, "second"))
-      //
-      //      Await.result(HttpClient.deleteIndex("foo"), Duration(1, "second")).getResponseBody must contain("acknowledged")
-      //
-      //      1 must beEqualTo(1)
-      //    }
+
+  "Client" should {
+          "fail usefully" in new WithApplication(FakeApplication(additionalPlugins = Seq("playlastik.plugin.PlayLastiKPlugin"),  additionalConfiguration = Map("playLastiK.isDevMode" -> true, "playLastiK.cleanOnStop" -> true))) {
+                val res = Await.result(RestClient.System.verifyIndex("foobarbaz"), Duration(1, "second"))
+                res.status must beEqualTo(404)
+          }
+    }
+
+//  "External Client" should {
+//          "fail usefully" in {
+//                val res = Await.result(HttpClient.System.verifyIndex("foobarbaz"), Duration(1, "second"))
+//                res.status must beEqualTo(404)
+//    }
+//  }
       //
       //    "create and delete aliases" in {
       //      val HttpClient = new HttpClient("http://localhost:9200")
@@ -206,4 +200,6 @@ class HttpClientSpec extends Specification {
 //      mockES.onStop
 //    }
 //  }
+
+  step(stopES)
 }

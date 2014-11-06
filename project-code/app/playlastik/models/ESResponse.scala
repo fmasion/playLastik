@@ -5,12 +5,14 @@ import play.api.libs.json._
 sealed trait ESResponse 
 case class ESFailure(error:String, status:Int) extends ESResponse
 
-case class IndexSuccess(_index:String, _type:String, _id:String, _version:Long) extends ESResponse
+case class IndexResponse(_index:String, _type:String, _id:String, _version:Long, created:Boolean) extends ESResponse
 
-object IndexSuccess{
-  implicit val succesIndexFormat = Json.format[IndexSuccess]
+
+
+object IndexResponse{
+  implicit val indexResponseFormat = Json.format[IndexResponse]
 }
 
 object ESFailure{
-  implicit val succesIndexFormat = Json.format[ESFailure]
+  implicit val esFailureFormat = Json.format[ESFailure]
 }

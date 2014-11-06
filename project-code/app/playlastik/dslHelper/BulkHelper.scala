@@ -1,9 +1,7 @@
 package playlastik.dslHelper
 
-import com.sksamuel.elastic4s._
 import com.sksamuel.elastic4s.ElasticDsl._
-import org.elasticsearch.action.deletebyquery.QueryRequestImplicit._
-import com.sksamuel.elastic4s.Implicits._
+import com.sksamuel.elastic4s._
 import playlastik.Post
 
 object BulkHelper {

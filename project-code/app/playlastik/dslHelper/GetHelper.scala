@@ -1,9 +1,6 @@
 package playlastik.dslHelper
 
 import com.sksamuel.elastic4s._
-import com.sksamuel.elastic4s.ElasticDsl._
-import org.elasticsearch.action.deletebyquery.QueryRequestImplicit._
-import com.sksamuel.elastic4s.Implicits._
 import play.api.libs.json._
 import playlastik.Get
 

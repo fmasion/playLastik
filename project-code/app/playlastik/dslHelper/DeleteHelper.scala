@@ -6,7 +6,7 @@ import org.elasticsearch.action.deletebyquery.QueryRequestImplicit._
 import com.sksamuel.elastic4s.Implicits._
 import play.api.libs.json.Json
 import play.api.libs.json.JsObject
-import playlastik.Delete
+import playlastik.{Delete}
 
 object DeleteHelper {
   val action = "_delete"

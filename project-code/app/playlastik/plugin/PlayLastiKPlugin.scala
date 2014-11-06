@@ -36,7 +36,6 @@ class PlayLastiKPlugin(app: Application) extends Plugin {
       }
 
     }
-
   }
 
   override def onStop() {
@@ -55,7 +54,7 @@ class PlayLastiKPlugin(app: Application) extends Plugin {
   }
 
   def cleanIndices(client: Client) = {
-    if (isDev && cleanOnStop) {
+    if ((isDev && cleanOnStop) || (app.mode == Mode.Test)) {
       val indicesNames = Await.result(RestClient.Admin.stats, Duration.create(1, "min")).getIndicesName
       log.info("Cleaning embeded ElasticSearch Indices : " + indicesNames)
       indicesNames.map(name => client.admin().indices().delete(new DeleteIndexRequest(name)))

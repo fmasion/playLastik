@@ -20,4 +20,4 @@ bin
 .settings
 /samples/data
 *.sc
-data/
+project-code/data

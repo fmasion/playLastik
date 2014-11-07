@@ -1,7 +1,8 @@
 package com.sksamuel.elastic4s
 
+import org.elasticsearch.action.deletebyquery.DeleteByQueryRequest
 import play.api.libs.json.Writes
-//import scala.collection.JavaConversions._
+
 
 object Implicits {
   
@@ -46,4 +47,5 @@ object Implicits {
       ""
     }
   }
+
 }

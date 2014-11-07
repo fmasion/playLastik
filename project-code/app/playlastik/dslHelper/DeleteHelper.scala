@@ -1,12 +1,12 @@
 package playlastik.dslHelper
 
-import com.sksamuel.elastic4s._
+import play.api.libs.json.{JsObject, Json}
 import com.sksamuel.elastic4s.ElasticDsl._
-import org.elasticsearch.action.deletebyquery.QueryRequestImplicit._
 import com.sksamuel.elastic4s.Implicits._
-import play.api.libs.json.Json
-import play.api.libs.json.JsObject
-import playlastik.{Delete}
+import org.elasticsearch.action.deletebyquery.DeleteByQueryImplicits._
+
+
+import playlastik.method.Delete
 
 object DeleteHelper {
   val action = "_delete"
@@ -15,11 +15,11 @@ object DeleteHelper {
     val index = "/" + req.build.index()
     val esType = "/" + req.build.`type`()
     val id = "/" + req.build.id() + "/"
-    val url = serviceUrl + index + esType + id 
+    val url = serviceUrl + index + esType + id
 
     val lOptQueryParams: List[Option[(String, String)]] = (
       Option(req.build.routing()).map(r => "routing" -> r) ::
-      Nil)
+        Nil)
     val queryParams = lOptQueryParams flatMap (_.toList)
 
     RequestInfo(Delete, url, "", queryParams)
@@ -33,7 +33,7 @@ object DeleteHelper {
     val url = serviceUrl + indices + typeList + "/_query"
     val lOptQueryParams = (
       Option(req.build.routing()).map(r => "routing" -> r) ::
-      Nil)
+        Nil)
     val queryParams = lOptQueryParams flatMap (_.toList)
     RequestInfo(Delete, url, query, queryParams)
 

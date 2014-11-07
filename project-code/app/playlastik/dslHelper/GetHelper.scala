@@ -2,22 +2,22 @@ package playlastik.dslHelper
 
 import com.sksamuel.elastic4s._
 import play.api.libs.json._
-import playlastik.Get
+import playlastik.method.Get
 
 object GetHelper {
-  
-  def getRequestInfo(serviceUrl: String, req: GetDefinition, source:Boolean=false): RequestInfo = {
+
+  def getRequestInfo(serviceUrl: String, req: GetDefinition, source: Boolean = false): RequestInfo = {
     val index = "/" + req.build.index()
     val esType = "/" + req.build.`type`()
     val id = "/" + req.build.id()
     val url = serviceUrl + index + esType + id + (if (source) ("/_source") else "")
-    
+
     val ofields = Option(req.build.fields())
 
     // handle parent / operation / routing / version in query parameter
     val lOptQueryParams: List[Option[(String, String)]] = (
       Option(req.build.routing()).map(r => "routing" -> r) ::
-      Nil)
+        Nil)
 
     val queryParams = lOptQueryParams flatMap (_.toList)
 
@@ -26,11 +26,11 @@ object GetHelper {
     } else {
       ("fields" -> ofields.get.mkString(",")) :: queryParams
     }
-    RequestInfo(Get, url,"", queryParamsWithFields)
-  } 
+    RequestInfo(Get, url, "", queryParamsWithFields)
+  }
 
   def getRequestInfo(serviceUrl: String, gets: Seq[GetDefinition]): RequestInfo = {
-     def getJson(req: GetDefinition): JsObject = {
+    def getJson(req: GetDefinition): JsObject = {
       val data = Json.obj("_index" -> req.build.index(),
         "_type" -> req.build.`type`(),
         "_id" -> req.build.id())
@@ -45,9 +45,9 @@ object GetHelper {
     }
     val docs = Json.obj("docs" -> JsArray(for (req <- gets) yield (getJson(req))))
     val url = serviceUrl + "/_mget"
-    
-    RequestInfo(Get, url,docs.toString)
-  } 
-  
-  
+
+    RequestInfo(Get, url, docs.toString)
+  }
+
+
 }

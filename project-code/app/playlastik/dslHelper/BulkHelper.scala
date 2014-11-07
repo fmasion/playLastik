@@ -2,13 +2,14 @@ package playlastik.dslHelper
 
 import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s._
-import playlastik.Post
+import com.sksamuel.elastic4s.Implicits._
+import playlastik.method.Post
 
 object BulkHelper {
 
   def getRequestInfo(serviceUrl: String, reqs: BulkCompatibleDefinition*): RequestInfo = {
 
-    def formatBulk(bulk: BulkCompatibleDefinition):List[String] = {
+    def formatBulk(bulk: BulkCompatibleDefinition): List[String] = {
       bulk match {
         case index: IndexDefinition => IndexHelper.getBulk(index)
         case delete: DeleteByIdDefinition => DeleteHelper.getBulk(delete)

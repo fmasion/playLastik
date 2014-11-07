@@ -1,9 +1,11 @@
 package playlastik
 
-import play.api.{Play, Logger}
-import play.api.libs.ws.{WSAuthScheme, WS, WSResponse}
-import playlastik.dslHelper.RequestInfo
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.ws.{WS, WSAuthScheme, WSResponse}
+import play.api.{Logger, Play}
+import playlastik.dslHelper.RequestInfo
+import playlastik.method._
+
 import scala.concurrent.Future
 
 /**
@@ -17,24 +19,24 @@ trait WSimpl {
   val pass = Play.configuration.getString("playLastiK.authentication.pass").getOrElse("")
   val serviceUrl = Play.configuration.getString("playLastiK.url").getOrElse("http://localhost:9200")
 
-  def log:Logger
+  def log: Logger
 
-  def getAuthentificationModel(modelName: String) ={
-    modelName match{
+  def getAuthentificationModel(modelName: String) = {
+    modelName match {
       case "BASIC" => WSAuthScheme.BASIC
       case "DIGEST" => WSAuthScheme.DIGEST
       case "KERBEROS" => WSAuthScheme.KERBEROS
       case "NTLM" => WSAuthScheme.NTLM
       case "SPNEGO" => WSAuthScheme.SPNEGO
-      case _  => WSAuthScheme.NONE
+      case _ => WSAuthScheme.NONE
     }
   }
 
   def doCall(reqInfo: RequestInfo): Future[WSResponse] = {
     log.debug(s"verb : ${reqInfo.method} \nurl : ${reqInfo.url} \nbody : ${reqInfo.body} \nparams : ${reqInfo.queryParams}")
-    val rh = if(authentificationName.equalsIgnoreCase("NONE")){
+    val rh = if (authentificationName.equalsIgnoreCase("NONE")) {
       WS.url(reqInfo.url)(app).withQueryString(reqInfo.queryParams: _*)
-    }else{
+    } else {
       WS.url(reqInfo.url)(app).withQueryString(reqInfo.queryParams: _*).withAuth(user, pass, getAuthentificationModel(authentificationName))
     }
     val fresp = reqInfo.method match {
@@ -47,7 +49,7 @@ trait WSimpl {
       case resp => {
         log.debug(s"return code : ${resp.status}")
         if (resp.status >= 400) {
-          log.error("Status : " + resp.status + " " +  resp.body)
+          log.error("Status : " + resp.status + " " + resp.body)
         }
       }
     }

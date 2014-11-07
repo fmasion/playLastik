@@ -1,7 +1,7 @@
 package playlastik.dslHelper
 
-import playlastik.Method
+import playlastik.method.Method
 
-case class RequestInfo(method:Method, url:String, body:String, queryParams: List[(String,String)] = Nil) {
+case class RequestInfo(method: Method, url: String, body: String, queryParams: List[(String, String)] = Nil) {
 
 }

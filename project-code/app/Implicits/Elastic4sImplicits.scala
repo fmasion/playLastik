@@ -15,6 +15,16 @@ object Implicits {
 
   }
 
+  implicit class CountDefinitionOps(val that: com.sksamuel.elastic4s.ElasticDsl.CountDefinition) extends AnyVal {
+    import org.elasticsearch.action.count.CountRequestOps._
+    def actionName = that.action.name()
+    def indices: List[String] = that._builder.request().indices().toList
+    def typeList: List[String] = that._builder.request().types().toList
+    def queryString: String = that._builder.request().queryString
+    def oRouting: Option[String] = Option(that.build.routing())
+
+  }
+
   implicit class IndexDefinitionOps(val that: com.sksamuel.elastic4s.ElasticDsl.IndexDefinition) extends AnyVal {
     def queryString: String = that.build.source().toUtf8()
     def oId: Option[String] = Option(that.build.id()).filter(s => !s.isEmpty())

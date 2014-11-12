@@ -10,6 +10,7 @@ import org.elasticsearch.node.Node
 import org.elasticsearch.node.NodeBuilder._
 import org.specs2.specification.BeforeExample
 import play.api.Logger
+import playlastik.RestClient
 
 
 object TestElasticNode {
@@ -49,3 +50,27 @@ trait WithExternalES {
 
   def stopES = TestElasticNode.stop
 }
+
+//trait ElasticSugar {
+//
+//  def blockUntilCount(expected: Long,
+//                      index: String,
+//                      types: String*) {
+//
+//    var backoff = 0
+//    var actual = 0l
+//
+//    while (backoff <= 50 && actual != expected) {
+//      if (backoff > 0)
+//        Thread.sleep(100)
+//      backoff = backoff + 1
+//      try {
+//        actual = RestClient.execute {
+//          count from index types types
+//        }.await.getCount
+//      } catch {
+//        case e: IndexMissingException => 0
+//      }
+//    }
+//    require(expected == actual, s"Block failed waiting on count: Expected was $expected but actual was $actual")
+//}}

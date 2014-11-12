@@ -1,10 +1,26 @@
 package playlastik.admin
 
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.json.Json
 import playlastik.WSimpl
+import playlastik.dslHelper.IndicesMgtHelper
+import playlastik.models.{RefreshIndicesResponse, CountResponse}
+
+import scala.concurrent.Future
 
 
 trait IndicesMgt {
   this: WSimpl =>
+
+  def refresh(indexes: String*): Future[RefreshIndicesResponse] = {
+    val reqInfo = IndicesMgtHelper.getRefreshRequestInfo(serviceUrl, indexes:_*)
+    val wsResp = doCall(reqInfo)
+    wsResp.map(r => Json.parse(r.body)).map{j =>
+      //log.error("RESPONSE" + j)
+      (j.as[RefreshIndicesResponse])
+    }
+
+  }
 
 
 //  def execute(c: CreateIndexDefinition): Future[CreateIndexResponse] = injectFuture[CreateIndexResponse](client.admin.indices.create(c.build, _))
@@ -17,7 +33,7 @@ trait IndicesMgt {
 //  def execute(req: CreateIndexTemplateDefinition): Future[PutIndexTemplateResponse] = {injectFuture[PutIndexTemplateResponse](client.admin.indices.putTemplate(req.build, _))}
 
 //  def flush(indexes: String*): Future[FlushResponse] = injectFuture[FlushResponse](client.admin.indices.prepareFlush(indexes: _*).execute)
-//  def refresh(indexes: String*): Future[RefreshResponse] = injectFuture[RefreshResponse](client.admin.indices.prepareRefresh(indexes: _*).execute)
+
 //  def open(index: String): Future[OpenIndexResponse] = injectFuture[OpenIndexResponse](client.admin.indices.prepareOpen(index).execute)
 //  def execute(get: GetMappingDefinition): Future[GetMappingsResponse] = {injectFuture[GetMappingsResponse](client.admin().indices().prepareGetMappings(get.indexes: _*).execute)}
 

@@ -1,5 +1,6 @@
 package playlastik.dslHelper
 
+import com.sksamuel.elastic4s.IndexDefinition
 import play.api.libs.json._
 import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.Implicits._
@@ -60,7 +61,7 @@ object IndexHelper {
     val lAction = loAction flatMap (_.toList)
     val mAction: Map[String, JsValue] = Map[String, JsValue]() ++ (lAction)
 
-    Json.obj(bulk.action.name() -> Json.toJson(mAction))
+    Json.obj("index" -> Json.toJson(mAction))
   }
 
 }

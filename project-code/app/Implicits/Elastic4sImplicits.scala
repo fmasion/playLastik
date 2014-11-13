@@ -1,13 +1,11 @@
 package com.sksamuel.elastic4s
 
-import org.elasticsearch.action.deletebyquery.DeleteByQueryRequest
-import play.api.libs.json.Writes
-
+//import com.sksamuel.elastic4s.ElasticDsl._
 
 object Implicits {
   
-  implicit class SearchDefinitionOps(val that: com.sksamuel.elastic4s.ElasticDsl.SearchDefinition) extends AnyVal {
-    def actionName = that.action.name()
+  implicit class SearchDefinitionOps(val that: ElasticDsl.SearchDefinition) extends AnyVal {
+    //def actionName = that.action.name()
     def indices: List[String] = that._builder.request().indices().toList
     def typeList: List[String] = that._builder.request().types().toList
     def queryString: String = that._builder.toString()
@@ -15,9 +13,9 @@ object Implicits {
 
   }
 
-  implicit class CountDefinitionOps(val that: com.sksamuel.elastic4s.ElasticDsl.CountDefinition) extends AnyVal {
+  implicit class CountDefinitionOps(val that: ElasticDsl.CountDefinition) extends AnyVal {
     import org.elasticsearch.action.count.CountRequestOps._
-    def actionName = that.action.name()
+    //def actionName = that.action.name()
     def indices: List[String] = that._builder.request().indices().toList
     def typeList: List[String] = that._builder.request().types().toList
     def queryString: String = that._builder.request().queryString
@@ -25,7 +23,7 @@ object Implicits {
 
   }
 
-  implicit class IndexDefinitionOps(val that: com.sksamuel.elastic4s.ElasticDsl.IndexDefinition) extends AnyVal {
+  implicit class IndexDefinitionOps(val that: IndexDefinition) extends AnyVal {
     def queryString: String = that.build.source().toUtf8()
     def oId: Option[String] = Option(that.build.id()).filter(s => !s.isEmpty())
     def oParent: Option[String] = Option(that.build.parent()).filter(s => !s.isEmpty())
@@ -40,7 +38,7 @@ object Implicits {
 
   }
 
-  implicit class UpdateDefinitionOps(val that: com.sksamuel.elastic4s.ElasticDsl.UpdateDefinition) extends AnyVal {
+  implicit class UpdateDefinitionOps(val that: ElasticDsl.UpdateDefinition) extends AnyVal {
     def oId: Option[String] = Option(that.build.id()).filter(s => !s.isEmpty())
     def oRouting: Option[String] = Option(that.build.routing()).filter(s => !s.isEmpty())
     def oRefresh: Option[Boolean] = Option(that.build.refresh()).filter(b => b)

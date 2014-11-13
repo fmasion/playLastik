@@ -58,7 +58,7 @@ object UpdateHelper {
     val lAction = loAction flatMap (_.toList)
     val mAction: Map[String, JsValue] = Map[String, JsValue]() ++ (lAction)
 
-    Json.obj(bulk.action.name() -> Json.toJson(mAction))
+    Json.obj("update" -> Json.toJson(mAction))
   }
 
   private def getBody(bulk: UpdateDefinition): JsValue = {

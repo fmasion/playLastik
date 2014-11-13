@@ -1,4 +1,4 @@
-val esVersion =  "1.2.1.2"
+val esVersion =  "1.4.0"
 
 resolvers += "bintray" at "http://dl.bintray.com/fmasion/maven"
 

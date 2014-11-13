@@ -1,6 +1,8 @@
 package playlastik
 
-import com.sksamuel.elastic4s.ElasticDsl._
+//import com.sksamuel.elastic4s.ElasticDsl._
+
+import com.sksamuel.elastic4s.IndexDefinition
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import playlastik.dslHelper.IndexHelper

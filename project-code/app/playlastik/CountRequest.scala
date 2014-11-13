@@ -1,6 +1,5 @@
 package playlastik
 
-import com.sksamuel.elastic4s.CountDsl
 import play.api.libs.json.Json
 import playlastik.dslHelper.CountHelper
 import com.sksamuel.elastic4s.ElasticDsl._

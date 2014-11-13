@@ -44,7 +44,7 @@ object DeleteHelper {
   }
 
   private def getAction_meta_data(bulk: DeleteByIdDefinition): JsObject = {
-    Json.obj(bulk.action.name() ->
+    Json.obj("delete" ->
       Json.obj("_index" -> bulk.build.index(),
         "_type" -> bulk.build.`type`(),
         "_id" -> bulk.build.id()))

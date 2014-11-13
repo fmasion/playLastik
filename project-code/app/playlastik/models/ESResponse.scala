@@ -13,6 +13,7 @@ case class ShardStatus(total:Int, successful:Int, failed:Int)
 
 case class CountResponse(count: Long, _shards: ShardStatus, terminatedEarly:Option[Boolean] =Some(false))
 
+
 // pattern => "_shards":{"total":5,"successful":5,"failed":0}
 
 // pattern BroadcastOperationResponse
@@ -21,6 +22,8 @@ case class CountResponse(count: Long, _shards: ShardStatus, terminatedEarly:Opti
 // {"_shards":{"total":10,"successful":5,"failed":0}}
 
 case class RefreshIndicesResponse(_shards :ShardStatus)
+case class FlushIndicesResponse(_shards :ShardStatus)
+case class ExistIndicesResponse(exists :Boolean)
 
 object ShardStatus {
   implicit val shardStatusFormat = Json.format[ShardStatus]
@@ -42,4 +45,11 @@ object RefreshIndicesResponse {
   implicit val refreshIndicesResponseFormat = Json.format[RefreshIndicesResponse]
 }
 
+object FlushIndicesResponse {
+  implicit val flushIndicesResponseFormat = Json.format[FlushIndicesResponse]
+}
+
+object ExistIndicesResponse {
+  implicit val existIndicesResponseFormat = Json.format[ExistIndicesResponse]
+}
 

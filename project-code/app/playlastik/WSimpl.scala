@@ -44,6 +44,7 @@ trait WSimpl {
       case Post => rh.post(reqInfo.body)
       case Put => rh.put(reqInfo.body)
       case Delete => rh.withBody(reqInfo.body).delete()
+      case Head => rh.withBody(reqInfo.body).head()
     }
     fresp onSuccess {
       case resp => {

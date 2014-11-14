@@ -18,9 +18,6 @@ case class CountResponse(count: Long, _shards: ShardStatus, terminatedEarly:Opti
 
 // pattern BroadcastOperationResponse
 
-//case class ShardOperationFailure(index:String, shardId:Int,reason:String)
-// {"_shards":{"total":10,"successful":5,"failed":0}}
-
 case class RefreshIndicesResponse(_shards :ShardStatus)
 case class FlushIndicesResponse(_shards :ShardStatus)
 case class ExistIndicesResponse(exists :Boolean)

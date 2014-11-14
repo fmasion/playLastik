@@ -1,8 +1,11 @@
 package playlastik
 
 import com.sksamuel.elastic4s.ElasticDsl._
-import play.api.libs.ws.WSResponse
+import play.api.Logger
+import play.api.libs.json.Json
+import playlastik.models.SearchResponse
 import playlastik.dslHelper.SearchHelper
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import scala.concurrent.Future
 
@@ -12,10 +15,13 @@ trait SearchRequest {
 
   def execute(req: SearchDefinition) = search(req)
 
-  // TODO Future[WSResponse] -> Future[SearchResponse]
-  def search(req: SearchDefinition): Future[WSResponse] = {
+  def search(req: SearchDefinition): Future[SearchResponse] = {
     val reqInfo = SearchHelper.getRequestInfo(serviceUrl, req)
-    doCall(reqInfo)
+    val wsResp = doCall(reqInfo)
+    wsResp.map(r => Json.parse(r.body)).map{j =>
+      //Logger.error(""+j)
+      j.as[SearchResponse]
+    }
   }
 
 //  def execute(searches: MultiSearchRequest): Future[MultiSearchResponse] =

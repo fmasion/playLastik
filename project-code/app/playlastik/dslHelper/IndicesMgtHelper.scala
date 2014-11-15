@@ -7,7 +7,6 @@ import play.api.libs.json._
 import playlastik.method.{Method, Post, Head, Delete}
 
 object IndicesMgtHelper {
-  val action = "_index"
 
   def getRefreshRequestInfo(serviceUrl: String, indices: String*): RequestInfo = {
     val indicesStr = indices match {

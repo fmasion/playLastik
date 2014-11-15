@@ -26,6 +26,14 @@ case class ExistIndicesResponse(exists :Boolean)
 case class CreateIndexResponse(acknowledged :Boolean)
 case class DeleteIndexResponse(acknowledged :Boolean)
 
+
+
+///////// ALIAS //////////
+case class MutateAliasResponse(acknowledged :Boolean)
+
+
+
+
 object ShardStatus {
   implicit val shardStatusFormat = Json.format[ShardStatus]
 }
@@ -60,5 +68,12 @@ object CreateIndexResponse {
 
 object DeleteIndexResponse {
   implicit val deleteIndexResponseFormat = Json.format[DeleteIndexResponse]
+}
+
+
+
+///////// ALIAS //////////
+object MutateAliasResponse {
+  implicit val mutateAliasResponseFormat = Json.format[MutateAliasResponse]
 }
 

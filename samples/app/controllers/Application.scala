@@ -70,7 +70,7 @@ object Application extends Controller {
 
   def searchIt(term:String) = Action.async { implicit request =>
     val fsearch = RestClient.search { search in "monindex" types "testmonType" query term start 0 limit 10 }
-    fsearch.map(r => Ok(r.body))
+    fsearch.map(r => Ok("" + r))
   }
 
   def indexIt(tweet:Tweet) = {

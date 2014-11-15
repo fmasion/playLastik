@@ -41,5 +41,12 @@ object IndicesMgtHelper {
   }
 
 
+  def getCreateRequestInfo(serviceUrl: String, req: CreateIndexDefinition): RequestInfo = {
+    val url = serviceUrl + "/" + req.build.indices().head
+    val method: Method = Post
+    RequestInfo(method, url, req._source.string, Nil)
+  }
+
+
 
 }

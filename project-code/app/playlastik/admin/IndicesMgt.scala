@@ -1,10 +1,11 @@
 package playlastik.admin
 
+import com.sksamuel.elastic4s.ElasticDsl._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import playlastik.WSimpl
 import playlastik.dslHelper.IndicesMgtHelper
-import playlastik.models.{FlushIndicesResponse, RefreshIndicesResponse, ExistIndicesResponse}
+import playlastik.models.{CreateIndexResponse, FlushIndicesResponse, RefreshIndicesResponse, ExistIndicesResponse}
 
 import scala.concurrent.Future
 
@@ -46,7 +47,14 @@ trait IndicesMgt {
     }
   }
 
-//  def execute(c: CreateIndexDefinition): Future[CreateIndexResponse] = injectFuture[CreateIndexResponse](client.admin.indices.create(c.build, _))
+  def execute(c: CreateIndexDefinition): Future[CreateIndexResponse] = {
+    val reqInfo = IndicesMgtHelper.getCreateRequestInfo(serviceUrl,c)
+    val wsResp = doCall(reqInfo)
+    wsResp.map(r => Json.parse(r.body)).map{j =>
+      j.as[CreateIndexResponse]
+    }
+  }
+
 //  def execute(req: CreateIndexRequest): Future[CreateIndexResponse] = injectFuture[CreateIndexResponse](client.admin.indices.create(req, _))
 //  def execute(i: IndexStatusDefinition): Future[IndicesStatusResponse] = injectFuture[IndicesStatusResponse](client.admin.indices.status(i.build, _))
 

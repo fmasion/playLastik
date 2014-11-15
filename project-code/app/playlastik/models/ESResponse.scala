@@ -20,7 +20,10 @@ case class CountResponse(count: Long, _shards: ShardStatus, terminatedEarly:Opti
 
 case class RefreshIndicesResponse(_shards :ShardStatus)
 case class FlushIndicesResponse(_shards :ShardStatus)
+
+
 case class ExistIndicesResponse(exists :Boolean)
+case class CreateIndexResponse(acknowledged :Boolean)
 
 object ShardStatus {
   implicit val shardStatusFormat = Json.format[ShardStatus]
@@ -48,5 +51,9 @@ object FlushIndicesResponse {
 
 object ExistIndicesResponse {
   implicit val existIndicesResponseFormat = Json.format[ExistIndicesResponse]
+}
+
+object CreateIndexResponse {
+  implicit val createIndexResponseFormat = Json.format[CreateIndexResponse]
 }
 

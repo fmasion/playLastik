@@ -24,6 +24,7 @@ case class FlushIndicesResponse(_shards :ShardStatus)
 
 case class ExistIndicesResponse(exists :Boolean)
 case class CreateIndexResponse(acknowledged :Boolean)
+case class DeleteIndexResponse(acknowledged :Boolean)
 
 object ShardStatus {
   implicit val shardStatusFormat = Json.format[ShardStatus]
@@ -55,5 +56,9 @@ object ExistIndicesResponse {
 
 object CreateIndexResponse {
   implicit val createIndexResponseFormat = Json.format[CreateIndexResponse]
+}
+
+object DeleteIndexResponse {
+  implicit val deleteIndexResponseFormat = Json.format[DeleteIndexResponse]
 }
 

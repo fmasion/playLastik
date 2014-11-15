@@ -17,9 +17,15 @@ class IndexMgtSpec extends Specification with PlaySpecification {
   val log = Logger("IndexMgtSpec")
   sequential
 
-  "A index creation" should {
-    "return an acknolegement" in new WithApplication(FakeApplication(additionalPlugins = Seq("playlastik.plugin.PlayLastiKPlugin"), additionalConfiguration = Map("playLastiK.isDevMode" -> true, "playLastiK.cleanOnStop" -> true))) {
+  "An index " should {
+    "should be created, checked and deleted" in new WithApplication(FakeApplication(additionalPlugins = Seq("playlastik.plugin.PlayLastiKPlugin"), additionalConfiguration = Map("playLastiK.isDevMode" -> true, "playLastiK.cleanOnStop" -> true))) {
       IndexMgtSpec.createIndexResponse.acknowledged mustEqual(true)
+      val existResp = Await.result(RestClient.exists("places"), Duration(1, "second"))
+      existResp.exists mustEqual(true)
+
+      IndexMgtSpec.deleteResp.acknowledged mustEqual(true)
+      val existResp2 = Await.result(RestClient.exists("places"), Duration(1, "second"))
+      existResp2.exists mustEqual(false)
     }
   }
 }
@@ -31,7 +37,7 @@ object IndexMgtSpec {
   import com.sksamuel.elastic4s.mappings.FieldType._
   import ElasticDsl._
 
-  val createIndexResponse = Await.result(RestClient.execute{
+  def createIndexResponse = Await.result(RestClient.execute{
     create index "places" shards 3 replicas 2 refreshInterval "10s" mappings(
       "city" as (
         "year_founded" typed IntegerType,
@@ -45,5 +51,7 @@ object IndexMgtSpec {
       PatternAnalyzerDefinition("country_code_analyzer", regex = ",")
       )
   }, Duration(1, "second"))
+
+  def deleteResp = Await.result(RestClient.execute(delete index "places"), Duration(1, "second"))
 
 }

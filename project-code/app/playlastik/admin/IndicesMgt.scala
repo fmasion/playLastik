@@ -1,11 +1,12 @@
 package playlastik.admin
 
+import com.sksamuel.elastic4s.DeleteIndexDefinition
 import com.sksamuel.elastic4s.ElasticDsl._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import playlastik.WSimpl
 import playlastik.dslHelper.IndicesMgtHelper
-import playlastik.models.{CreateIndexResponse, FlushIndicesResponse, RefreshIndicesResponse, ExistIndicesResponse}
+import playlastik.models._
 
 import scala.concurrent.Future
 
@@ -41,25 +42,32 @@ trait IndicesMgt {
     wsResp.map { r =>
       r.status match {
         case 200 => ExistIndicesResponse(true)
-        case 404 => ExistIndicesResponse(true)
+        case 404 => ExistIndicesResponse(false)
         case _ =>   ExistIndicesResponse(false)
       }
     }
   }
 
-  def execute(c: CreateIndexDefinition): Future[CreateIndexResponse] = {
-    val reqInfo = IndicesMgtHelper.getCreateRequestInfo(serviceUrl,c)
+  def execute(create: CreateIndexDefinition): Future[CreateIndexResponse] = {
+    val reqInfo = IndicesMgtHelper.getCreateRequestInfo(serviceUrl,create)
     val wsResp = doCall(reqInfo)
     wsResp.map(r => Json.parse(r.body)).map{j =>
       j.as[CreateIndexResponse]
     }
   }
 
-//  def execute(req: CreateIndexRequest): Future[CreateIndexResponse] = injectFuture[CreateIndexResponse](client.admin.indices.create(req, _))
-//  def execute(i: IndexStatusDefinition): Future[IndicesStatusResponse] = injectFuture[IndicesStatusResponse](client.admin.indices.status(i.build, _))
+  def execute(delete: DeleteIndexDefinition): Future[DeleteIndexResponse] = {
+    val reqInfo = IndicesMgtHelper.getDeleteRequestInfo(serviceUrl,delete)
+    val wsResp = doCall(reqInfo)
+    wsResp.map(r => Json.parse(r.body)).map{j =>
+      j.as[DeleteIndexResponse]
+    }
+  }
 
 
-//  def execute(delete: DeleteIndexDefinition): Future[DeleteIndexResponse] = {injectFuture[DeleteIndexResponse](client.admin.indices.delete(delete.build, _))}
+  //  def execute(i: IndexStatusDefinition): Future[IndicesStatusResponse] = injectFuture[IndicesStatusResponse](client.admin.indices.status(i.build, _))
+
+
 //  def execute(req: DeleteIndexTemplateDefinition): Future[DeleteIndexTemplateResponse] = {injectFuture[DeleteIndexTemplateResponse](client.admin.indices.deleteTemplate(req.build, _))}
 //  def execute(req: CreateIndexTemplateDefinition): Future[PutIndexTemplateResponse] = {injectFuture[PutIndexTemplateResponse](client.admin.indices.putTemplate(req.build, _))}
 

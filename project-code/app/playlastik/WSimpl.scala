@@ -49,7 +49,7 @@ trait WSimpl {
     fresp onSuccess {
       case resp => {
         log.debug(s"return code : ${resp.status}")
-        if (resp.status >= 400) {
+        if (resp.status >= 500) {
           log.error("Status : " + resp.status + " " + resp.body)
         }
       }

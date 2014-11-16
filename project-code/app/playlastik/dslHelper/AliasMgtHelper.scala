@@ -1,6 +1,6 @@
 package playlastik.dslHelper
 
-import com.sksamuel.elastic4s.{GetAliasDefinition, MutateAliasDefinition}
+import com.sksamuel.elastic4s.{IndicesAliasesRequestDefinition, GetAliasDefinition, MutateAliasDefinition}
 import com.sksamuel.elastic4s.ElasticDsl._
 import play.api.Logger
 import play.api.libs.json._
@@ -26,6 +26,23 @@ object AliasMgtHelper {
     RequestInfo(method, url, doc.toString(), Nil)
   }
 
+  def getIndicesAliasesRequestInfo(serviceUrl: String, req: IndicesAliasesRequestDefinition): RequestInfo = {
+    val url = serviceUrl + "/_aliases"
+    val method: Method = Post
+    import scala.collection.JavaConversions._
+    val jsonActions =req.build.getAliasActions.map{ aliasAction =>
+      val oFilter = Option(aliasAction.aliasAction().filter()).filterNot(_.isEmpty).map("filter" -> Json.parse(_))
+      val oRouting = Option(aliasAction.aliasAction().searchRouting()).filterNot(_.isEmpty).map("routing" -> JsString(_))
+      val oAlias = Option(aliasAction.aliasAction().alias()).map("alias" -> JsString(_))
+      val oIndex = Option(aliasAction.aliasAction().index()).map("index" -> JsString(_))
+      val allOption:List[(String, JsValue)] = List(oFilter, oRouting, oAlias, oIndex).collect{case Some(a) => a}
+      val mapInfos = Map[String, JsValue]() ++ allOption
+      Json.obj(aliasAction.aliasAction().actionType().toString.toLowerCase -> mapInfos)
+    }.toList
+    val doc = Json.obj("actions" -> jsonActions)
+    RequestInfo(method, url, doc.toString(), Nil)
+  }
+
   def getAliasesInfoRequestInfo(serviceUrl: String, req: GetAliasDefinition): RequestInfo = {
     val method: Method = Get
     val indices = req.request.indices().toList
@@ -39,7 +56,6 @@ object AliasMgtHelper {
       case _   => "/" + aliases.mkString(",")
     }
     val url = serviceUrl + indicesUrlFragment + "/_aliases" + aliasesUrlFragment
-    log.error("WTF" + url )
     RequestInfo(method, url, "", Nil)
   }
 

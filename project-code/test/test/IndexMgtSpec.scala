@@ -20,11 +20,11 @@ class IndexMgtSpec extends Specification with PlaySpecification {
   "An index " should {
     "should be created, checked and deleted" in new WithApplication(FakeApplication(additionalPlugins = Seq("playlastik.plugin.PlayLastiKPlugin"), additionalConfiguration = Map("playLastiK.isDevMode" -> true, "playLastiK.cleanOnStop" -> true))) {
       IndexMgtSpec.createIndexResponse.acknowledged mustEqual(true)
-      val existResp = Await.result(RestClient.exists("places"), Duration(1, "second"))
+      val existResp = Await.result(RestClient.exists("places"), Duration(2, "second"))
       existResp.exists mustEqual(true)
 
       IndexMgtSpec.deleteResp.acknowledged mustEqual(true)
-      val existResp2 = Await.result(RestClient.exists("places"), Duration(1, "second"))
+      val existResp2 = Await.result(RestClient.exists("places"), Duration(2, "second"))
       existResp2.exists mustEqual(false)
     }
   }
@@ -50,8 +50,8 @@ object IndexMgtSpec {
       ) analysis (
       PatternAnalyzerDefinition("country_code_analyzer", regex = ",")
       )
-  }, Duration(1, "second"))
+  }, Duration(2, "second"))
 
-  def deleteResp = Await.result(RestClient.execute(delete index "places"), Duration(1, "second"))
+  def deleteResp = Await.result(RestClient.execute(delete index "places"), Duration(2, "second"))
 
 }

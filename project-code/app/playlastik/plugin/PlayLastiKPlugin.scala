@@ -15,7 +15,7 @@ class PlayLastiKPlugin(app: Application) extends Plugin {
 
   val isDev = Play.current.configuration.getBoolean("playLastiK.isDevMode").getOrElse(false)
   val cleanOnStop = Play.current.configuration.getBoolean("playLastiK.cleanOnStop").getOrElse(false)
-  val clusterName = Play.current.configuration.getString("playLastiK.cleanOnStop").getOrElse("playLastiK")
+  val clusterName = Play.current.configuration.getString("playLastiK.cluster.name").getOrElse("playLastiK")
 
   val log = Logger("playlastik.plugin.PlayLastiKPlugin")
 

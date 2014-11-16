@@ -24,12 +24,11 @@ class AliasSpec extends Specification with PlaySpecification {
         index into "waterways/rivers" id 11 fields ("name" -> "River Lune", "country" -> "England"),
         index into "waterways/rivers" id 12 fields ("name" -> "River Dee", "country" -> "England"),
         index into "waterways/rivers" id 21 fields ("name" -> "River Dee", "country" -> "Wales"),
-        index into "waterways_updated/rivers" id 31 fields ("name" -> "Thames", "country" -> "England")
+        index into "waterways/rivers" id 21 fields ("name" -> "River Dee", "country" -> "Wales")
       ), Duration(2, "second")
     )
+    val res5 = Await.result(RestClient.execute(index into "waterways_updated/rivers" id 31 fields ("name" -> "Thames", "country" -> "England")), Duration(2, "second"))
     val refreshResponse = Await.result(RestClient.refresh(), Duration(2, "second"))
-
-
   }
 
   "A alias creation request" should {
@@ -94,6 +93,38 @@ class AliasSpec extends Specification with PlaySpecification {
     }
   }
 
+  "RestClient alias" should {
+    "move alias between indices" in new WithApplication(FakeApplication(additionalPlugins = Seq("playlastik.plugin.PlayLastiKPlugin"), additionalConfiguration = Map("playLastiK.isDevMode" -> true, "playLastiK.cleanOnStop" -> true))) {
+      initStep
+
+      val aliasResponse = Await.result(RestClient.execute {add alias "aquatic_locations" on "waterways"}, Duration(2, "second"))
+      val aliasResponse2 = Await.result(RestClient.execute {add alias "english_waterways" on "waterways" routing "4" filter FilterBuilders.termFilter("country", "england")}, Duration(2, "second"))
+      val aliasResponse3 = Await.result(RestClient.execute {add alias "moving_alias" on "waterways"}, Duration(2, "second"))
+
+      val refreshResponse = Await.result(RestClient.refresh(), Duration(2, "second"))
+
+      val existResp = Await.result(RestClient.exists("waterways"), Duration(2, "second"))
+      existResp.exists mustEqual(true)
+
+      val searchResponse = Await.result(RestClient.search(search in "*" ), Duration(2, "second"))
+      //log.error(""+searchResponse)
+
+
+      val existResp1 = Await.result(RestClient.exists("waterways_updated"), Duration(2, "second"))
+      existResp1.exists mustEqual(true)
+
+      val updateAliases = AliasSpec.updateAliases
+      updateAliases.acknowledged === true
+      val getAliasUpdated = AliasSpec.getAliasUpdated
+      getAliasUpdated.contains("waterways_updated") mustEqual(true)
+      getAliasUpdated("waterways_updated").aliases.contains("moving_alias") mustEqual(true)
+
+      val getAlias2 = AliasSpec.getAlias
+      getAlias2.contains("waterways") mustEqual(true)
+      getAlias2("waterways").aliases.contains("moving_alias") mustEqual(false)
+    }
+  }
+
 
 
 
@@ -105,5 +136,12 @@ object AliasSpec {
   def search2 = Await.result(RestClient.execute(search in "english_waterways" query "Dee"), Duration(2, "second"))
 
   def getAlias = Await.result(RestClient.execute(get alias "english_waterways" on "waterways"), Duration(2, "second"))
+  def getAlias2 = Await.result(RestClient.execute(get alias "moving_alias" on "waterways"), Duration(2, "second"))
+  def getAliasUpdated = Await.result(RestClient.execute(get alias "moving_alias" on "waterways_updated"), Duration(2, "second"))
+
+  def updateAliases = Await.result(RestClient.execute(  aliases(
+    remove alias "moving_alias" on "waterways",
+    add alias "moving_alias" on "waterways_updated")
+  ), Duration(2, "second"))
 
 }

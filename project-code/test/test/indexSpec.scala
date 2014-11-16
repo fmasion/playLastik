@@ -5,7 +5,7 @@ import org.junit.runner._
 import org.specs2.mutable._
 import org.specs2.runner._
 import play.api.Logger
-import play.api.libs.json.{Json, JsObject}
+import play.api.libs.json.Json
 import play.api.test.{WithApplication, _}
 import playlastik._
 
@@ -13,7 +13,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 
 @RunWith(classOf[JUnitRunner])
-class SearchSpec extends Specification with PlaySpecification {
+class indexSpec extends Specification with PlaySpecification {
   val log = Logger("SearchSpec")
   sequential
 

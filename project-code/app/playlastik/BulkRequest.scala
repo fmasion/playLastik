@@ -11,6 +11,7 @@ trait BulkRequest {
 
   def bulk(reqs: BulkCompatibleDefinition*) = {
     val reqInfo = BulkHelper.getRequestInfo(serviceUrl, reqs: _*)
+    //log.error("BULK_REQ"+ reqInfo)
     doCall(reqInfo)
   }
 

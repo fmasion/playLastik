@@ -2,6 +2,7 @@ package playlastik.models
 
 import org.elasticsearch.rest.RestStatus
 import play.api.libs.json._
+import playlastik.utils.JsonExtension._
 
 case class SearchHits(_index:String, _type:String, _id:String, _score:Double, _source: JsObject)
 case class SearchInternalHits(total:Long, max_score:Double, hits: List[SearchHits])
@@ -21,7 +22,12 @@ object SearchHits {
 }
 
 object SearchInternalHits {
-  implicit val searchInternalHitsFormat = Json.format[SearchInternalHits]
+
+  implicit val searchInternalHitsFormat = new Format[SearchInternalHits] {
+    val base = Json.format[SearchInternalHits]
+    def reads(json: JsValue): JsResult[SearchInternalHits] = base.compose(withDefault("max_score", 0d)).reads(json)
+    def writes(o: SearchInternalHits): JsValue = base.writes(o)
+  }
 }
 object SearchFacets {
   implicit val searchFacetsFormat = Json.format[SearchFacets]

@@ -16,7 +16,7 @@ object BulkHelper {
         case update: UpdateDefinition => UpdateHelper.getBulk(update)
       }
     }
-    val body = reqs.toList.flatMap(formatBulk).mkString("\n")
+    val body = reqs.toList.flatMap(formatBulk).mkString("\n") + "\n"
 
     val url = serviceUrl + "/_bulk"
 

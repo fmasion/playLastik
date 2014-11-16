@@ -31,6 +31,9 @@ case class DeleteIndexResponse(acknowledged :Boolean)
 ///////// ALIAS //////////
 case class MutateAliasResponse(acknowledged :Boolean)
 
+case class AliasMetas(filter : Option[JsObject], index_routing: Option[String], search_routing: Option[String]  )
+case class AliasDefinition(aliases : Map[String, AliasMetas] )
+
 
 
 
@@ -69,6 +72,15 @@ object CreateIndexResponse {
 object DeleteIndexResponse {
   implicit val deleteIndexResponseFormat = Json.format[DeleteIndexResponse]
 }
+
+object AliasMetas {
+  implicit val aliasMetasResponseFormat = Json.format[AliasMetas]
+}
+
+object AliasDefinition {
+  implicit val aliasDefinitionResponseFormat = Json.format[AliasDefinition]
+}
+
 
 
 

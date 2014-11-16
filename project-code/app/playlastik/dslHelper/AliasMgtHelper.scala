@@ -1,11 +1,13 @@
 package playlastik.dslHelper
 
-import com.sksamuel.elastic4s.{MutateAliasDefinition, DeleteIndexDefinition}
+import com.sksamuel.elastic4s.{GetAliasDefinition, MutateAliasDefinition}
 import com.sksamuel.elastic4s.ElasticDsl._
+import play.api.Logger
 import play.api.libs.json._
-import playlastik.method.{Delete, Head, Method, Post}
+import playlastik.method.{Delete, Get, Method, Post}
 
 object AliasMgtHelper {
+  val log = Logger("playlastik.dslHelper.AliasMgtHelper")
 
   def getMutateRequestInfo(serviceUrl: String, req: MutateAliasDefinition): RequestInfo = {
     val url = serviceUrl + "/_aliases"
@@ -22,6 +24,23 @@ object AliasMgtHelper {
     val doc = Json.obj("actions" -> List(Json.obj(req.aliasAction.actionType().toString.toLowerCase -> mapInfos)))
 
     RequestInfo(method, url, doc.toString(), Nil)
+  }
+
+  def getAliasesInfoRequestInfo(serviceUrl: String, req: GetAliasDefinition): RequestInfo = {
+    val method: Method = Get
+    val indices = req.request.indices().toList
+    val indicesUrlFragment = indices match{
+      case Nil => "" // all indices
+      case _   => "/" + indices.mkString(",")
+    }
+    val aliases = req.request.aliases().toList
+    val aliasesUrlFragment = aliases match{
+      case Nil => ""
+      case _   => "/" + aliases.mkString(",")
+    }
+    val url = serviceUrl + indicesUrlFragment + "/_aliases" + aliasesUrlFragment
+    log.error("WTF" + url )
+    RequestInfo(method, url, "", Nil)
   }
 
 //  def getDeleteRequestInfo(serviceUrl: String, req: DeleteIndexDefinition): RequestInfo = {

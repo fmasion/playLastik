@@ -27,14 +27,14 @@ class SearchSpec extends Specification with PlaySpecification {
           index into "lyon/pubs" fields ("name" -> "blue bell")
       ), Duration(1, "second")
     )
-    val refreshResponse = Await.result(RestClient.refresh(), Duration(1, "second"))
+    val refreshResponse = Await.result(RestClient.refresh(), Duration(2, "second"))
   }
 
   "A search request" should {
     "return the relevant elements" in new WithApplication(FakeApplication(additionalPlugins = Seq("playlastik.plugin.PlayLastiKPlugin"), additionalConfiguration = Map("playLastiK.isDevMode" -> true, "playLastiK.cleanOnStop" -> true))) {
       initStep
 
-      val searchResponse = Await.result(RestClient.search(search in "london"->"landmarks" query "palace"), Duration(1, "second"))
+      val searchResponse = Await.result(RestClient.search(search in "london"->"landmarks" query "palace"), Duration(2, "second"))
       searchResponse.hits.total === 1
       searchResponse.hits.hits.head._source === Json.obj("name" -> "hampton court palace")
     }
@@ -44,7 +44,7 @@ class SearchSpec extends Specification with PlaySpecification {
     "return the relevant elements" in new WithApplication(FakeApplication(additionalPlugins = Seq("playlastik.plugin.PlayLastiKPlugin"), additionalConfiguration = Map("playLastiK.isDevMode" -> true, "playLastiK.cleanOnStop" -> true))) {
       initStep
 
-      val searchResponse = Await.result(RestClient.search(search in "london"->"landmarks" query "palace"), Duration(1, "second"))
+      val searchResponse = Await.result(RestClient.search(search in "london"->"landmarks" query "palace"), Duration(2, "second"))
       searchResponse.hits.total === 1
       searchResponse.hits.hits.head._source === Json.obj("name" -> "hampton court palace")
     }

@@ -25,9 +25,9 @@ class AliasSpec extends Specification with PlaySpecification {
         index into "waterways/rivers" id 12 fields ("name" -> "River Dee", "country" -> "England"),
         index into "waterways/rivers" id 21 fields ("name" -> "River Dee", "country" -> "Wales"),
         index into "waterways_updated/rivers" id 31 fields ("name" -> "Thames", "country" -> "England")
-      ), Duration(1, "second")
+      ), Duration(2, "second")
     )
-    val refreshResponse = Await.result(RestClient.refresh(), Duration(1, "second"))
+    val refreshResponse = Await.result(RestClient.refresh(), Duration(2, "second"))
 
 
   }
@@ -36,11 +36,11 @@ class AliasSpec extends Specification with PlaySpecification {
     "return an acknolegment" in new WithApplication(FakeApplication(additionalPlugins = Seq("playlastik.plugin.PlayLastiKPlugin"), additionalConfiguration = Map("playLastiK.isDevMode" -> true, "playLastiK.cleanOnStop" -> true))) {
       initStep
 
-      val aliasResponse = Await.result(RestClient.execute {add alias "aquatic_locations" on "waterways"}, Duration(1, "second"))
+      val aliasResponse = Await.result(RestClient.execute {add alias "aquatic_locations" on "waterways"}, Duration(2, "second"))
       aliasResponse.acknowledged mustEqual(true)
-      val aliasResponse2 = Await.result(RestClient.execute {add alias "english_waterways" on "waterways" filter FilterBuilders.termFilter("country", "england")}, Duration(1, "second"))
+      val aliasResponse2 = Await.result(RestClient.execute {add alias "english_waterways" on "waterways" filter FilterBuilders.termFilter("country", "england")}, Duration(2, "second"))
       aliasResponse2.acknowledged mustEqual(true)
-      val aliasResponse3 = Await.result(RestClient.execute {add alias "moving_alias" on "waterways"}, Duration(1, "second"))
+      val aliasResponse3 = Await.result(RestClient.execute {add alias "moving_alias" on "waterways"}, Duration(2, "second"))
       aliasResponse3.acknowledged mustEqual(true)
 
     }
@@ -50,9 +50,9 @@ class AliasSpec extends Specification with PlaySpecification {
     "return 'River Dee' in England and Wales for search" in new WithApplication(FakeApplication(additionalPlugins = Seq("playlastik.plugin.PlayLastiKPlugin"), additionalConfiguration = Map("playLastiK.isDevMode" -> true, "playLastiK.cleanOnStop" -> true))) {
       initStep
 
-      val aliasResponse = Await.result(RestClient.execute {add alias "aquatic_locations" on "waterways"}, Duration(1, "second"))
-      val aliasResponse2 = Await.result(RestClient.execute {add alias "english_waterways" on "waterways" filter FilterBuilders.termFilter("country", "england")}, Duration(1, "second"))
-      val aliasResponse3 = Await.result(RestClient.execute {add alias "moving_alias" on "waterways"}, Duration(1, "second"))
+      val aliasResponse = Await.result(RestClient.execute {add alias "aquatic_locations" on "waterways"}, Duration(2, "second"))
+      val aliasResponse2 = Await.result(RestClient.execute {add alias "english_waterways" on "waterways" filter FilterBuilders.termFilter("country", "england")}, Duration(2, "second"))
+      val aliasResponse3 = Await.result(RestClient.execute {add alias "moving_alias" on "waterways"}, Duration(2, "second"))
 
       val search = AliasSpec.search1
       search.hits.total === 2
@@ -66,9 +66,9 @@ class AliasSpec extends Specification with PlaySpecification {
     "return 'River Dee' in England for search" in new WithApplication(FakeApplication(additionalPlugins = Seq("playlastik.plugin.PlayLastiKPlugin"), additionalConfiguration = Map("playLastiK.isDevMode" -> true, "playLastiK.cleanOnStop" -> true))) {
       initStep
 
-      val aliasResponse = Await.result(RestClient.execute {add alias "aquatic_locations" on "waterways"}, Duration(1, "second"))
-      val aliasResponse2 = Await.result(RestClient.execute {add alias "english_waterways" on "waterways" filter FilterBuilders.termFilter("country", "england")}, Duration(1, "second"))
-      val aliasResponse3 = Await.result(RestClient.execute {add alias "moving_alias" on "waterways"}, Duration(1, "second"))
+      val aliasResponse = Await.result(RestClient.execute {add alias "aquatic_locations" on "waterways"}, Duration(2, "second"))
+      val aliasResponse2 = Await.result(RestClient.execute {add alias "english_waterways" on "waterways" filter FilterBuilders.termFilter("country", "england")}, Duration(2, "second"))
+      val aliasResponse3 = Await.result(RestClient.execute {add alias "moving_alias" on "waterways"}, Duration(2, "second"))
 
       val search = AliasSpec.search2
       search.hits.total === 1
@@ -78,10 +78,32 @@ class AliasSpec extends Specification with PlaySpecification {
     }
   }
 
+  "RestClient alias" should {
+    "be in query for alias" in new WithApplication(FakeApplication(additionalPlugins = Seq("playlastik.plugin.PlayLastiKPlugin"), additionalConfiguration = Map("playLastiK.isDevMode" -> true, "playLastiK.cleanOnStop" -> true))) {
+      initStep
+
+      val aliasResponse = Await.result(RestClient.execute {add alias "aquatic_locations" on "waterways"}, Duration(2, "second"))
+      val aliasResponse2 = Await.result(RestClient.execute {add alias "english_waterways" on "waterways" routing "4" filter FilterBuilders.termFilter("country", "england")}, Duration(2, "second"))
+      val aliasResponse3 = Await.result(RestClient.execute {add alias "moving_alias" on "waterways"}, Duration(2, "second"))
+
+      val getAlias = AliasSpec.getAlias
+      getAlias.contains("waterways") mustEqual(true)
+      getAlias("waterways").aliases("english_waterways").index_routing === Some("4")
+      getAlias("waterways").aliases.contains("moving_alias") mustEqual(false)
+
+    }
+  }
+
+
+
+
+
 }
 
 object AliasSpec {
-  def search1 = Await.result(RestClient.execute(search in "waterways" query "Dee"), Duration(1, "second"))
-  def search2 = Await.result(RestClient.execute(search in "english_waterways" query "Dee"), Duration(1, "second"))
+  def search1 = Await.result(RestClient.execute(search in "waterways" query "Dee"), Duration(2, "second"))
+  def search2 = Await.result(RestClient.execute(search in "english_waterways" query "Dee"), Duration(2, "second"))
+
+  def getAlias = Await.result(RestClient.execute(get alias "english_waterways" on "waterways"), Duration(2, "second"))
 
 }

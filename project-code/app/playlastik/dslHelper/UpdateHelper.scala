@@ -63,10 +63,11 @@ object UpdateHelper {
 
   private def getBody(bulk: UpdateDefinition): JsValue = {
     val lOptBody: List[Option[(String, JsValue)]] = (
+      bulk.oDoc.map(d => "doc" -> JsString(d)) ::
       bulk.oScript.map(r => "script" -> JsString(r)) ::
-        bulk.oScriptParams.map(r => "params" -> JsString(r)) ::
-        bulk.oUpsertRequest.map(r => "upsert" -> JsString(r)) ::
-        Nil)
+      bulk.oScriptParams.map(r => "params" -> JsString(r)) ::
+      bulk.oUpsertRequest.map(r => "upsert" -> JsString(r)) ::
+      Nil)
     val bodyParams = lOptBody flatMap (_.toList)
     Json.toJson(Map[String, JsValue]() ++ bodyParams)
   }

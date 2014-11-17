@@ -41,17 +41,6 @@ class SearchSpec extends Specification with PlaySpecification {
   }
 
   "A search request" should {
-    "return the relevant elements" in new WithApplication(FakeApplication(additionalPlugins = Seq("playlastik.plugin.PlayLastiKPlugin"), additionalConfiguration = Map("playLastiK.isDevMode" -> true, "playLastiK.cleanOnStop" -> true))) {
-      initStep
-
-      val searchResponse = Await.result(RestClient.search(search in "london"->"landmarks" query "palace"), Duration(2, "second"))
-      searchResponse.hits.total === 1
-      searchResponse.hits.hits.head._source === Json.obj("name" -> "hampton court palace")
-    }
-  }
-
-
-  "A search request" should {
     "return when no matching elements" in new WithApplication(FakeApplication(additionalPlugins = Seq("playlastik.plugin.PlayLastiKPlugin"), additionalConfiguration = Map("playLastiK.isDevMode" -> true, "playLastiK.cleanOnStop" -> true))) {
       initStep
 

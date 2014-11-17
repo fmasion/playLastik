@@ -4,8 +4,11 @@ import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s._
 import com.sksamuel.elastic4s.Implicits._
 import playlastik.method.Post
+import play.api.Logger
 
 object BulkHelper {
+
+  val log = Logger("playlastik.dslHelper.BulkHelper")
 
   def getRequestInfo(serviceUrl: String, reqs: BulkCompatibleDefinition*): RequestInfo = {
 
@@ -17,6 +20,8 @@ object BulkHelper {
       }
     }
     val body = reqs.toList.flatMap(formatBulk).mkString("\n") + "\n"
+
+    //log.error(""+body)
 
     val url = serviceUrl + "/_bulk"
 

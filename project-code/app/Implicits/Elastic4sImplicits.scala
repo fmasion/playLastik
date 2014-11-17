@@ -40,6 +40,7 @@ object Implicits {
 
   implicit class UpdateDefinitionOps(val that: ElasticDsl.UpdateDefinition) extends AnyVal {
     def oId: Option[String] = Option(that.build.id()).filter(s => !s.isEmpty())
+    def oDoc: Option[String] = Option(that.build.doc().source().toUtf8).filter(s => !s.isEmpty())
     def oRouting: Option[String] = Option(that.build.routing()).filter(s => !s.isEmpty())
     def oRefresh: Option[Boolean] = Option(that.build.refresh()).filter(b => b)
     def oFields: Option[String] = if (that.build.fields().isEmpty) None else Some(that.build.fields().mkString(","))

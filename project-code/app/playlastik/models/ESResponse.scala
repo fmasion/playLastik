@@ -11,7 +11,9 @@ case class IndexResponse(_index: String, _type: String, _id: String, _version: L
 
 case class ShardStatus(total:Int, successful:Int, failed:Int)
 
-case class CountResponse(count: Long, _shards: ShardStatus, terminatedEarly:Option[Boolean] =Some(false))
+case class CountResponse(count: Long, _shards: ShardStatus, terminatedEarly:Option[Boolean] =Some(false)){
+  def isTermEarly = terminatedEarly.getOrElse(false)
+}
 
 
 // pattern => "_shards":{"total":5,"successful":5,"failed":0}

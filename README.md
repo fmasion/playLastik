@@ -1,43 +1,43 @@
 #PlayLastiK
 
-## Playframework 2.2.x / Dead Simple ElasticSearch integration
-## Integration with ElasticSearch 1.2.1 
+## Playframework 2.3.x / Dead Simple ElasticSearch integration
+## Integration with ElasticSearch 1.4.0
 =========
 
 # Why this plugin ?
 
-This plugin integrates play with [elastic4S](https://github.com/sksamuel/elastic4s) which provides an elegant DLS for elastcSearch.
+This plugin integrates play with [elastic4s](https://github.com/sksamuel/elastic4s) which provides an elegant DLS for elasticSearch.
 
-It also extends elastic4s by providing a restClient (maybe this should rather be integrated to elastic4s)
+It also extends elastic4s by providing a **restClient** (maybe this should rather be integrated to elastic4s)
 
-Many libs already exist, most are using ElasticSearch native java client. 
+Many libs already exist, most are using ElasticSearch **native java client**. 
 
 So if you need to use elasticSearch REST api most libs come with their own http client lib. 
 	
-- this lib uses play WS
+- this lib uses **play WS**
 Most lib handle json documents but dont use play Json API
-- this lib uses play Json api	
+- this lib uses **play Json api**	
+- this lib tries to give you a typesafe access to elasticSearch response types using case class mapping
 
-###This plugin isn't feature complete it will not cover all elastic4s features (nor all ElasticSearch features)
+###This plugin isn't feature complete **(at the moment)** it will not cover all elastic4s features (nor all ElasticSearch features)
 
-It fully support indexing, querying, bulk index, manipulating mapping…
+It fully support indexing, querying, bulk index, managing indices lifecycle, aliases, manipulating mapping…
 
+###Disclaimer
+Some features are still missing (mostly admin features…) feel free to send Pull requests.
+Most off the missing methods from the original elastic4s client are referenced and commented in the code. It's not complicated to implement them. ;-) 
 
 # How to install it ?
 
 In your application, add this configuration to the `project/Build.scala` file :
 
-add this dependency for play 2.2.x :
+add this dependency for play 2.3.x :
 
-	"playlastik"  % "playlastik_2.10" % "0.90.10.3" 
-or
-
-	"playlastik"  % "playlastik_2.10" % "1.2.1.2-SNAPSHOT"
-
+	"playlastik"  % "playlastik_2.10" % "1.4.0"
 
 add this resolver :
 
-	resolvers += Resolver.url("Fred's GitHub Play Repository", url("http://fmasion.github.com/releases/"))(Resolver.ivyStylePatterns)
+	resolvers += "fred's bintray" at "http://dl.bintray.com/fmasion/maven"
 
 
 In your application, add to `conf/play.plugins` (or create the file if it dosn't exist) this configuration :
@@ -75,11 +75,24 @@ Create `conf/playlastik.conf` you can configure some elements of vert.x :
 		authentication=NONE
 		#authentication.user=""
 		#authentication.pass=""
-	
+
+		# Exponential Backoff Retry if no http response or http failure
+		# will retry up to maxNbRetry with an exponential delay
+		# first time 100ms then 200, 400, 800, 1600...
+		#
+		# default = true
+		withRetry=true
+		# defaults = 5 times
+		maxNbRetry=5
+		# default = 20 ms
+		delay=20
+
 	}
   
 
 # License
+
+
 
 © F.Masion
 

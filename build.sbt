@@ -4,6 +4,6 @@ lazy val playLastikSample = (project in file("samples")).enablePlugins(PlayScala
 
 lazy val playLastikParent = (project in file(".")).aggregate(playLastik,playLastikSample)
 
-version in ThisBuild := "1.2.1.2"
+version in ThisBuild := "1.4.0"
 
 publishArtifact := false

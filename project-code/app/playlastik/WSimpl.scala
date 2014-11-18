@@ -1,10 +1,14 @@
 package playlastik
 
+import java.util.concurrent.TimeUnit
+
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.ws.{WS, WSAuthScheme, WSResponse}
 import play.api.{Logger, Play}
 import playlastik.dslHelper.RequestInfo
 import playlastik.method._
+import retry.Defaults._
+import scala.concurrent.duration._
 
 import scala.concurrent.Future
 
@@ -18,6 +22,9 @@ trait WSimpl {
   val user = Play.configuration.getString("playLastiK.authentication.user").getOrElse("")
   val pass = Play.configuration.getString("playLastiK.authentication.pass").getOrElse("")
   val serviceUrl = Play.configuration.getString("playLastiK.url").getOrElse("http://localhost:9200")
+  val withRetry = Play.configuration.getBoolean("playLastiK.withRetry").getOrElse(true)
+  val maxRetry = Play.configuration.getInt("playLastiK.maxRetry").getOrElse(5)
+  val delay = Play.configuration.getLong("playLastiK.delay").getOrElse(20L)
 
   def log: Logger
 
@@ -39,12 +46,18 @@ trait WSimpl {
     } else {
       WS.url(reqInfo.url)(app).withQueryString(reqInfo.queryParams: _*).withAuth(user, pass, getAuthentificationModel(authentificationName))
     }
-    val fresp = reqInfo.method match {
-      case Get => rh.withBody(reqInfo.body).get()
-      case Post => rh.post(reqInfo.body)
-      case Put => rh.put(reqInfo.body)
-      case Delete => rh.withBody(reqInfo.body).delete()
-      case Head => rh.withBody(reqInfo.body).head()
+
+    implicit val success = retry.Success[WSResponse](_ => true)
+    import odelay.Timer
+    val timer = implicitly[Timer]
+    val policy = retry.Backoff(max = maxRetry, delay = Duration(delay, TimeUnit.MILLISECONDS))
+    val fresp = policy{ () => reqInfo.method match {
+        case Get => rh.withBody(reqInfo.body).get()
+        case Post => rh.post(reqInfo.body)
+        case Put => rh.put(reqInfo.body)
+        case Delete => rh.withBody(reqInfo.body).delete()
+        case Head => rh.withBody(reqInfo.body).head()
+      }
     }
     fresp onSuccess {
       case resp => {

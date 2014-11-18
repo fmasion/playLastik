@@ -18,7 +18,7 @@ trait SearchRequest {
   def search(req: SearchDefinition): Future[SearchResponse] = {
     val reqInfo = SearchHelper.getRequestInfo(serviceUrl, req)
     val wsResp = doCall(reqInfo)
-    wsResp.map(r => Json.parse(r.body)).map{j =>
+    wsResp.map{j =>
       //Logger.error(""+j)
       j.as[SearchResponse]
     }

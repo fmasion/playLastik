@@ -2,12 +2,15 @@ package playlastik
 
 import java.util.concurrent.TimeUnit
 
+import org.elasticsearch.ElasticsearchException
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.json.{JsValue, JsError, JsSuccess, Json}
 import play.api.libs.ws.{WS, WSAuthScheme, WSResponse}
 import play.api.{Logger, Play}
 import playlastik.dslHelper.RequestInfo
 import playlastik.method._
-import retry.Defaults._
+import playlastik.models.ESFailure
+import scala.util.{Try}
 import scala.concurrent.duration._
 
 import scala.concurrent.Future
@@ -39,7 +42,7 @@ trait WSimpl {
     }
   }
 
-  def doCall(reqInfo: RequestInfo): Future[WSResponse] = {
+  def doCall(reqInfo: RequestInfo): Future[JsValue] = {
     //log.error(s"verb : ${reqInfo.method} \nurl : ${reqInfo.url} \nbody : ${reqInfo.body} \nparams : ${reqInfo.queryParams}")
     val rh = if (authentificationName.equalsIgnoreCase("NONE")) {
       WS.url(reqInfo.url)(app).withQueryString(reqInfo.queryParams: _*)
@@ -59,19 +62,25 @@ trait WSimpl {
         case Head => rh.withBody(reqInfo.body).head()
       }
     }
-    fresp onSuccess {
-      case resp => {
-        log.debug(s"return code : ${resp.status}")
-        if (resp.status >= 500) {
-          log.error("Status : " + resp.status + " " + resp.body)
-        }
+
+    val fresp2 = fresp.map{ resp =>
+      val j = Try(Json.parse(resp.body)).getOrElse(Json.obj("status" -> resp.status))
+      j.asOpt[ESFailure] match {
+        case Some(failure) => makeException(failure)
+        case None  => j
       }
     }
-    fresp onFailure {
+
+    fresp2 onFailure {
       case t => log.error(t.getMessage())
     }
-    fresp
+    fresp2
 
+  }
+
+
+  def makeException(failure: ESFailure):JsValue = {
+    throw new ElasticsearchException(failure.error)
   }
 
 }

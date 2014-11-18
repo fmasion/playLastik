@@ -17,7 +17,9 @@ trait CountRequest {
   def count(req: CountDefinition) = {
     val reqInfo = CountHelper.getRequestInfo(serviceUrl, req)
     val wsResp = doCall(reqInfo)
-    wsResp.map(r => Json.parse(r.body)).map(j => (j.as[CountResponse]))
+    wsResp.map{j =>
+      j.as[CountResponse]
+    }
   }
 
 }

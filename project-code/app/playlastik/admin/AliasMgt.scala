@@ -16,7 +16,7 @@ trait AliasMgt {
     def execute(req: MutateAliasDefinition): Future[MutateAliasResponse] = {
       val reqInfo = AliasMgtHelper.getMutateRequestInfo(serviceUrl,req)
       val wsResp = doCall(reqInfo)
-      wsResp.map(r => Json.parse(r.body)).map{j =>
+      wsResp.map{ j =>
         j.as[MutateAliasResponse]
       }
     }
@@ -24,7 +24,7 @@ trait AliasMgt {
     def execute(req: GetAliasDefinition): Future[Map[String, AliasDefinition]]= {
       val reqInfo = AliasMgtHelper.getAliasesInfoRequestInfo(serviceUrl,req)
       val wsResp = doCall(reqInfo)
-      wsResp.map(r => Json.parse(r.body)).map{j =>
+      wsResp.map{ j =>
         j.as[Map[String, AliasDefinition]]
       }
     }
@@ -32,7 +32,7 @@ trait AliasMgt {
     def execute(req: IndicesAliasesRequestDefinition): Future[MutateAliasResponse] = {
       val reqInfo = AliasMgtHelper.getIndicesAliasesRequestInfo(serviceUrl,req)
       val wsResp = doCall(reqInfo)
-      wsResp.map(r => Json.parse(r.body)).map{j =>
+      wsResp.map{ j =>
         j.as[MutateAliasResponse]
       }
     }

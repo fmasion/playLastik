@@ -5,6 +5,7 @@ import play.api.libs.json._
 
 sealed trait ESResponse
 
+case class EmptyBodyResponse(status: Int)
 case class ESFailure(error: String, status: Int) extends ESResponse
 
 case class IndexResponse(_index: String, _type: String, _id: String, _version: Long, created: Boolean) extends ESResponse
@@ -53,6 +54,10 @@ object IndexResponse {
 
 object ESFailure {
   implicit val esFailureFormat = Json.format[ESFailure]
+}
+
+object EmptyBodyResponse {
+  implicit val emptyBodyResponseFormat = Json.format[EmptyBodyResponse]
 }
 
 object RefreshIndicesResponse {

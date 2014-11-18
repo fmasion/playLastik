@@ -27,9 +27,8 @@ with ClusterMgt {
 
   object Admin {
     def stats: Future[StatsResponse] = {
-      doCall(RequestInfo(Get, (serviceUrl + "/_stats"), "")).map { r =>
-        val jbody = Json.parse(r.body)
-        jbody.as[StatsResponse]
+      doCall(RequestInfo(Get, (serviceUrl + "/_stats"), "")).map { j =>
+        j.as[StatsResponse]
       }
     }
   }

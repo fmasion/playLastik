@@ -19,7 +19,9 @@ trait IndexRequest {
   def index(req: IndexDefinition): Future[IndexResponse] = {
     val reqInfo = IndexHelper.getRequestInfo(serviceUrl, req)
     val wsResp = doCall(reqInfo)
-    wsResp.map(r => Json.parse(r.body)).map(j => (j.as[IndexResponse]))
+    wsResp.map{ j =>
+      j.as[IndexResponse]
+    }
   }
 
 //  def execute(req: UpdateRequest): Future[UpdateResponse] = injectFuture[UpdateResponse](client.update(req, _))

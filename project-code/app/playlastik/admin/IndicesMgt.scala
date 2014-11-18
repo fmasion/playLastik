@@ -21,7 +21,7 @@ trait IndicesMgt {
   def refresh(indexes: String*): Future[RefreshIndicesResponse] = {
     val reqInfo = IndicesMgtHelper.getRefreshRequestInfo(serviceUrl, indexes:_*)
     val wsResp = doCall(reqInfo)
-    wsResp.map(r => Json.parse(r.body)).map{j =>
+    wsResp.map{ j =>
       //log.error("RESPONSE" + j)
       j.as[RefreshIndicesResponse]
     }
@@ -30,7 +30,7 @@ trait IndicesMgt {
   def flush(indexes: String*): Future[FlushIndicesResponse] = {
     val reqInfo = IndicesMgtHelper.getFlushRequestInfo(serviceUrl, indexes:_*)
     val wsResp = doCall(reqInfo)
-    wsResp.map(r => Json.parse(r.body)).map{j =>
+    wsResp.map{ j =>
       //log.error("RESPONSE" + j)
       j.as[FlushIndicesResponse]
     }
@@ -39,8 +39,8 @@ trait IndicesMgt {
   def exists(indexes: String*): Future[ExistIndicesResponse] = {
     val reqInfo = IndicesMgtHelper.getExistRequestInfo(serviceUrl, indexes:_*)
     val wsResp = doCall(reqInfo)
-    wsResp.map { r =>
-      r.status match {
+    wsResp.map { j => //EmptyBodyResponse
+      j.as[EmptyBodyResponse].status match {
         case 200 => ExistIndicesResponse(true)
         case 404 => ExistIndicesResponse(false)
         case _ =>   ExistIndicesResponse(false)
@@ -51,7 +51,7 @@ trait IndicesMgt {
   def execute(create: CreateIndexDefinition): Future[CreateIndexResponse] = {
     val reqInfo = IndicesMgtHelper.getCreateRequestInfo(serviceUrl,create)
     val wsResp = doCall(reqInfo)
-    wsResp.map(r => Json.parse(r.body)).map{j =>
+    wsResp.map{ j =>
       j.as[CreateIndexResponse]
     }
   }
@@ -59,7 +59,7 @@ trait IndicesMgt {
   def execute(delete: DeleteIndexDefinition): Future[DeleteIndexResponse] = {
     val reqInfo = IndicesMgtHelper.getDeleteRequestInfo(serviceUrl,delete)
     val wsResp = doCall(reqInfo)
-    wsResp.map(r => Json.parse(r.body)).map{j =>
+    wsResp.map{ j =>
       j.as[DeleteIndexResponse]
     }
   }

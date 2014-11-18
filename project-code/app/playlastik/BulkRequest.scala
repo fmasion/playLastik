@@ -17,9 +17,7 @@ trait BulkRequest {
     val reqInfo = BulkHelper.getRequestInfo(serviceUrl, reqs: _*)
     //log.error("BULK_REQ"+ reqInfo)
     val resp = doCall(reqInfo)
-    resp.map { r =>
-      val j = Json.parse(r.body)
-      //log.error(""+j)
+    resp.map { j =>
       j.as[BulkResponse]
     }
   }

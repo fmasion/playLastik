@@ -15,7 +15,7 @@ import scala.concurrent.duration._
 
 @RunWith(classOf[JUnitRunner])
 class DeleteSpec extends Specification with PlaySpecification {
-  val log = Logger("AliasSpec")
+  val log = Logger("test.DeleteSpec")
   sequential
 
   val t1 = TestClass("River Lune" , "England" )
@@ -42,6 +42,17 @@ class DeleteSpec extends Specification with PlaySpecification {
     val refreshResponse = Await.result(RestClient.refresh(), Duration(2, "second"))
   }
 
+  def deleteStep2 = {
+    val res = Await.result(
+      RestClient.execute(
+        delete id 12222222 from "delete/rivers"
+      ), Duration(2, "second")
+    )
+    //log.error(""+res)
+
+    val refreshResponse = Await.result(RestClient.refresh(), Duration(2, "second"))
+  }
+
   "A delete request" should {
     "return right count" in new WithApplication(FakeApplication(additionalPlugins = Seq("playlastik.plugin.PlayLastiKPlugin"), additionalConfiguration = Map("playLastiK.isDevMode" -> true, "playLastiK.cleanOnStop" -> true))) {
       initStep
@@ -53,6 +64,21 @@ class DeleteSpec extends Specification with PlaySpecification {
 
       val countResponse2 = Await.result(RestClient.execute {count from "delete"}, Duration(2, "second"))
       countResponse2.count mustEqual(1)
+
+    }
+  }
+
+  "A delete request with bad id" should {
+    "return right count" in new WithApplication(FakeApplication(additionalPlugins = Seq("playlastik.plugin.PlayLastiKPlugin"), additionalConfiguration = Map("playLastiK.isDevMode" -> true, "playLastiK.cleanOnStop" -> true))) {
+      initStep
+
+      val countResponse = Await.result(RestClient.execute {count from "delete"}, Duration(2, "second"))
+      countResponse.count mustEqual(2)
+
+      deleteStep2
+
+      val countResponse2 = Await.result(RestClient.execute {count from "delete"}, Duration(2, "second"))
+      countResponse2.count mustEqual(2)
 
     }
   }

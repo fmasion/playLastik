@@ -2,6 +2,8 @@ package playlastik
 
 import com.sksamuel.elastic4s.ElasticDsl._
 import playlastik.dslHelper.DeleteHelper
+import playlastik.models.DeleteResponse
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 
 trait DeleteRequest {
@@ -12,12 +14,18 @@ trait DeleteRequest {
 
   def delete(req: DeleteByIdDefinition) = {
     val reqInfo = DeleteHelper.getRequestInfo(serviceUrl, req)
-    doCall(reqInfo)
+    val wsResp = doCall(reqInfo)
+    wsResp.map{j =>
+      j.as[DeleteResponse]
+    }
   }
 
   def delete(req: DeleteByQueryDefinition) = {
     val reqInfo = DeleteHelper.getRequestInfo(serviceUrl, req)
-    doCall(reqInfo)
+    val wsResp = doCall(reqInfo)
+    wsResp.map{j =>
+      j.as[DeleteResponse]
+    }
   }
 
 }

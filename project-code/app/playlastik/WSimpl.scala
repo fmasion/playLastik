@@ -76,9 +76,4 @@ trait WSimpl {
 
   }
 
-
-  def makeException(failure: ESFailure):JsValue = {
-    throw new ElasticsearchException(failure.error)
-  }
-
 }

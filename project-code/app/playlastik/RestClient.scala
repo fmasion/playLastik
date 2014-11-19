@@ -24,7 +24,6 @@ with ClusterMgt {
 
   val log = Logger("playlastik.RestClient")
 
-
   object Admin {
     def stats: Future[StatsResponse] = {
       doCall(RequestInfo(Get, (serviceUrl + "/_stats"), "")).map { j =>

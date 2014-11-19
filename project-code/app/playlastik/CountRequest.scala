@@ -1,6 +1,5 @@
 package playlastik
 
-import play.api.libs.json.Json
 import playlastik.dslHelper.CountHelper
 import com.sksamuel.elastic4s.ElasticDsl._
 import playlastik.models.CountResponse
@@ -8,7 +7,6 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import scala.concurrent.Future
 
-//TODO
 trait CountRequest {
   this: WSimpl =>
 

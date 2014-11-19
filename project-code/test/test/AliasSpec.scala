@@ -136,7 +136,7 @@ object AliasSpec {
 
   def getAlias = Await.result(RestClient.execute(get alias "english_waterways" on "waterways"), Duration(2, "second"))
   def getAlias2 = Await.result(RestClient.execute(get alias "moving_alias" on "waterways"), Duration(2, "second"))
-  def getAliasUpdated = Await.result(RestClient.execute(get alias "moving_alias" on "waterways_updated"), Duration(2, "second"))
+  def getAliasUpdated = Await.result(RestClient.execute(get alias "moving_alias" on ("waterways_updated", "toto")), Duration(2, "second"))
 
   def updateAliases = Await.result(RestClient.execute(  aliases(
     remove alias "moving_alias" on "waterways",

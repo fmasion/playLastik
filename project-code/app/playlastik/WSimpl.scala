@@ -8,6 +8,7 @@ import play.api.libs.json.{JsValue, JsError, JsSuccess, Json}
 import play.api.libs.ws.{WS, WSAuthScheme, WSResponse}
 import play.api.{Logger, Play}
 import playlastik.dslHelper.RequestInfo
+import playlastik.elasticSearchException.ExceptionBuilder
 import playlastik.method._
 import playlastik.models.ESFailure
 import scala.util.{Try}
@@ -66,14 +67,11 @@ trait WSimpl {
     val fresp2 = fresp.map{ resp =>
       val j = Try(Json.parse(resp.body)).getOrElse(Json.obj("status" -> resp.status))
       j.asOpt[ESFailure] match {
-        case Some(failure) => makeException(failure)
+        case Some(failure) => ExceptionBuilder.getException(failure)
         case None  => j
       }
     }
 
-    fresp2 onFailure {
-      case t => log.error(t.getMessage())
-    }
     fresp2
 
   }

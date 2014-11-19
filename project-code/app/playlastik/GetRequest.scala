@@ -2,6 +2,8 @@ package playlastik
 
 import com.sksamuel.elastic4s.GetDefinition
 import playlastik.dslHelper.GetHelper
+import playlastik.models.GetResponse
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 
 trait GetRequest {
@@ -13,12 +15,19 @@ trait GetRequest {
 
   def get(req: GetDefinition, source: Boolean) = {
     val reqInfo = GetHelper.getRequestInfo(serviceUrl, req, source)
-    doCall(reqInfo)
+    val wsResp = doCall(reqInfo)
+    wsResp.map{j =>
+      j.as[GetResponse]
+    }
   }
 
   def get(gets: GetDefinition*) = {
     val reqInfo = GetHelper.getRequestInfo(serviceUrl, gets)
-    doCall(reqInfo)
+    val wsResp = doCall(reqInfo)
+    wsResp.map{j =>
+      //log.error("" + j)
+      j.as[GetResponse]
+    }
   }
 
 }

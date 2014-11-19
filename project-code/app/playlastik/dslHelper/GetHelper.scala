@@ -1,10 +1,13 @@
 package playlastik.dslHelper
 
 import com.sksamuel.elastic4s._
+import play.api.Logger
 import play.api.libs.json._
 import playlastik.method.Get
 
 object GetHelper {
+
+  val log = Logger("playlastik.dslHelper.GetHelper")
 
   def getRequestInfo(serviceUrl: String, req: GetDefinition, source: Boolean = false): RequestInfo = {
     val index = "/" + req.build.index()
@@ -35,12 +38,9 @@ object GetHelper {
         "_type" -> req.build.`type`(),
         "_id" -> req.build.id())
 
-      val fields = req.build.fields()
-      val fieldProp = if (fields.isEmpty) {
-        Json.obj()
-      } else {
-        Json.obj("fields" -> fields.mkString(","))
-      }
+      val fields = Option(req.build.fields()).filterNot(_.isEmpty)
+      //log.error("FIELDS " + fields)
+      val fieldProp = fields.map(optfields => Json.obj("fields" -> optfields.mkString(","))).getOrElse(Json.obj())
       data ++ fieldProp
     }
     val docs = Json.obj("docs" -> JsArray(for (req <- gets) yield (getJson(req))))

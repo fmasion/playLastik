@@ -33,7 +33,7 @@ class GetSpec extends Specification with PlaySpecification {
       RestClient.bulk(
         index into "waterways2/rivers" id 11 doc PlayJsonSource(t1),
         index into "waterways2/rivers" id 12 doc PlayJsonSource(t2)
-      ), Duration(1, "second")
+      ), Duration(2, "second")
     )
     val refreshResponse = Await.result(RestClient.refresh(), Duration(2, "second"))
   }

@@ -25,7 +25,7 @@ class indexSpec extends Specification with PlaySpecification {
           index into "london/pubs" fields ("name" -> "blue bell"),
           index into "paris/pubs" fields ("name" -> "blue bell"),
           index into "lyon/pubs" fields ("name" -> "blue bell")
-      ), Duration(1, "second")
+      ), Duration(2, "second")
     )
     val refreshResponse = Await.result(RestClient.refresh(), Duration(2, "second"))
   }

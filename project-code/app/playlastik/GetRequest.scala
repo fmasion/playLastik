@@ -9,11 +9,9 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 trait GetRequest {
   this: WSimpl =>
 
-  def execute(req: GetDefinition) = get(req)
+//  def getSource(req: GetDefinition) = get(req = req, source = true)
 
-  def getSource(req: GetDefinition) = get(req = req, source = true)
-
-  def get(req: GetDefinition, source: Boolean = false) = {
+  def execute(req: GetDefinition, source: Boolean = false) = {
     val reqInfo = GetHelper.getRequestInfo(serviceUrl, req, source)
     //log.error(""+reqInfo)
     val wsResp = doCall(reqInfo)
@@ -22,7 +20,7 @@ trait GetRequest {
     }
   }
 
-  def get(gets: MultiGetDefinition) = {
+  def execute(gets: MultiGetDefinition) = {
     val reqInfo = GetHelper.getRequestInfo(serviceUrl, gets)
     val wsResp = doCall(reqInfo)
     //log.error(""+reqInfo)

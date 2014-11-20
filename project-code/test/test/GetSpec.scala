@@ -42,7 +42,7 @@ class GetSpec extends Specification with PlaySpecification {
     "return an existing Element" in new WithApplication(FakeApplication(additionalPlugins = Seq("playlastik.plugin.PlayLastiKPlugin"), additionalConfiguration = Map("playLastiK.isDevMode" -> true, "playLastiK.cleanOnStop" -> true))) {
       initStep
 
-      val getResponse = Await.result(RestClient.get {get id 11 from "waterways2" -> "rivers"}, Duration(2, "second"))
+      val getResponse = Await.result(RestClient.execute {get id 11 from "waterways2" -> "rivers"}, Duration(2, "second"))
       getResponse.found mustEqual(true)
       getResponse.asOpt[TestClass].get mustEqual(t1)
 
@@ -53,7 +53,7 @@ class GetSpec extends Specification with PlaySpecification {
     "return an empty getResponse if no matching Id" in new WithApplication(FakeApplication(additionalPlugins = Seq("playlastik.plugin.PlayLastiKPlugin"), additionalConfiguration = Map("playLastiK.isDevMode" -> true, "playLastiK.cleanOnStop" -> true))) {
       initStep
 
-      val getResponse = Await.result(RestClient.get {get id 1234 from "waterways2" -> "rivers"}, Duration(2, "second"))
+      val getResponse = Await.result(RestClient.execute {get id 1234 from "waterways2" -> "rivers"}, Duration(2, "second"))
       getResponse.found mustEqual(false)
       getResponse._source mustEqual(None)
 
@@ -64,7 +64,7 @@ class GetSpec extends Specification with PlaySpecification {
     "return all requested Elements" in new WithApplication(FakeApplication(additionalPlugins = Seq("playlastik.plugin.PlayLastiKPlugin"), additionalConfiguration = Map("playLastiK.isDevMode" -> true, "playLastiK.cleanOnStop" -> true))) {
       initStep
 
-      val getResponse = Await.result(RestClient.get {
+      val getResponse = Await.result(RestClient.execute {
         multiget(
           get id 11 from "waterways2" -> "rivers",
           get id 12 from "waterways2" -> "rivers")
@@ -80,7 +80,7 @@ class GetSpec extends Specification with PlaySpecification {
     "return only matching Elements" in new WithApplication(FakeApplication(additionalPlugins = Seq("playlastik.plugin.PlayLastiKPlugin"), additionalConfiguration = Map("playLastiK.isDevMode" -> true, "playLastiK.cleanOnStop" -> true))) {
       initStep
 
-      val getResponse = Await.result(RestClient.get {
+      val getResponse = Await.result(RestClient.execute {
         multiget(
           get id 11 from "waterways2" -> "rivers",
           get id 1222222222 from "waterways2" -> "rivers")

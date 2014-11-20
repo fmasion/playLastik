@@ -13,7 +13,7 @@ import scala.concurrent.duration._
 
 @RunWith(classOf[JUnitRunner])
 class CountSpec extends Specification with PlaySpecification {
-  val log = Logger("CountSpec")
+  val log = Logger("test.CountSpec")
   sequential
 
   "A count request" should {

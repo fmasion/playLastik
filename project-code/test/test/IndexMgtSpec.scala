@@ -14,7 +14,7 @@ import scala.concurrent.duration._
 
 @RunWith(classOf[JUnitRunner])
 class IndexMgtSpec extends Specification with PlaySpecification {
-  val log = Logger("IndexMgtSpec")
+  val log = Logger("test.IndexMgtSpec")
   sequential
 
   "An index " should {

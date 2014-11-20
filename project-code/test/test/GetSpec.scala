@@ -22,7 +22,7 @@ object TestClass{
 
 @RunWith(classOf[JUnitRunner])
 class GetSpec extends Specification with PlaySpecification {
-  val log = Logger("AliasSpec")
+  val log = Logger("test.GetSpec")
   sequential
 
   val t1 = TestClass("River Lune" , "England" )
@@ -43,9 +43,8 @@ class GetSpec extends Specification with PlaySpecification {
       initStep
 
       val getResponse = Await.result(RestClient.get {get id 11 from "waterways2" -> "rivers"}, Duration(2, "second"))
-      getResponse.docs.size mustEqual(1)
-      getResponse.docs.head.found mustEqual(true)
-      getResponse.docs.head.asOpt[TestClass].get mustEqual(t1)
+      getResponse.found mustEqual(true)
+      getResponse.asOpt[TestClass].get mustEqual(t1)
 
     }
   }
@@ -55,9 +54,41 @@ class GetSpec extends Specification with PlaySpecification {
       initStep
 
       val getResponse = Await.result(RestClient.get {get id 1234 from "waterways2" -> "rivers"}, Duration(2, "second"))
-      getResponse.docs.size mustEqual(1)
-      getResponse.docs.head.found mustEqual(false)
-      getResponse.docs.head._source mustEqual(None)
+      getResponse.found mustEqual(false)
+      getResponse._source mustEqual(None)
+
+    }
+  }
+
+  "A multi get request" should {
+    "return all requested Elements" in new WithApplication(FakeApplication(additionalPlugins = Seq("playlastik.plugin.PlayLastiKPlugin"), additionalConfiguration = Map("playLastiK.isDevMode" -> true, "playLastiK.cleanOnStop" -> true))) {
+      initStep
+
+      val getResponse = Await.result(RestClient.get {
+        multiget(
+          get id 11 from "waterways2" -> "rivers",
+          get id 12 from "waterways2" -> "rivers")
+        }, Duration(2, "second"))
+      getResponse.docs.size mustEqual(2)
+      getResponse.docs.head.found mustEqual(true)
+      getResponse.docs.head.asOpt[TestClass].get mustEqual(t1)
+
+    }
+  }
+
+  "A multi get request" should {
+    "return only matching Elements" in new WithApplication(FakeApplication(additionalPlugins = Seq("playlastik.plugin.PlayLastiKPlugin"), additionalConfiguration = Map("playLastiK.isDevMode" -> true, "playLastiK.cleanOnStop" -> true))) {
+      initStep
+
+      val getResponse = Await.result(RestClient.get {
+        multiget(
+          get id 11 from "waterways2" -> "rivers",
+          get id 1222222222 from "waterways2" -> "rivers")
+      }, Duration(2, "second"))
+      getResponse.docs.size mustEqual(2)
+      getResponse.docs.head.found mustEqual(true)
+      getResponse.docs.tail.head.found mustEqual(false)
+      getResponse.docs.head.asOpt[TestClass].get mustEqual(t1)
 
     }
   }

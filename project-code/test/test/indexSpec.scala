@@ -14,7 +14,7 @@ import scala.concurrent.duration._
 
 @RunWith(classOf[JUnitRunner])
 class indexSpec extends Specification with PlaySpecification {
-  val log = Logger("SearchSpec")
+  val log = Logger("test.indexSpec")
   sequential
 
   def initStep = {

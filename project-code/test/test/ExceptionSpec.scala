@@ -15,7 +15,7 @@ import scala.concurrent.duration._
 
 @RunWith(classOf[JUnitRunner])
 class ExceptionSpec extends Specification with PlaySpecification {
-  val log = Logger("AliasSpec")
+  val log = Logger("test.ExceptionSpec")
   sequential
 
   def aliasResponse = Await.result(RestClient.execute {add alias "aquatic_locations" on "waterways"}, Duration(2, "second"))

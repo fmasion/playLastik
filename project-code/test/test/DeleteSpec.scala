@@ -64,7 +64,6 @@ class DeleteSpec extends Specification with PlaySpecification {
 
       val countResponse2 = Await.result(RestClient.execute {count from "delete"}, Duration(2, "second"))
       countResponse2.count mustEqual(1)
-
     }
   }
 

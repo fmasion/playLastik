@@ -1,6 +1,7 @@
 package playlastik.dslHelper
 
 import com.sksamuel.elastic4s._
+import org.elasticsearch.action.get.MultiGetRequest
 import play.api.Logger
 import play.api.libs.json._
 import playlastik.method.Get
@@ -32,18 +33,19 @@ object GetHelper {
     RequestInfo(Get, url, "", queryParamsWithFields)
   }
 
-  def getRequestInfo(serviceUrl: String, gets: Seq[GetDefinition]): RequestInfo = {
-    def getJson(req: GetDefinition): JsObject = {
-      val data = Json.obj("_index" -> req.build.index(),
-        "_type" -> req.build.`type`(),
-        "_id" -> req.build.id())
+  def getRequestInfo(serviceUrl: String, multigets: MultiGetDefinition): RequestInfo = {
+    import scala.collection.JavaConversions._
+    def getJson(req: MultiGetRequest.Item): JsObject = {
+      val data = Json.obj("_index" -> req.index(),
+        "_type" -> req.`type`(),
+        "_id" -> req.id())
 
-      val fields = Option(req.build.fields()).filterNot(_.isEmpty)
+      val fields = Option(req.fields()).filterNot(_.isEmpty)
       //log.error("FIELDS " + fields)
       val fieldProp = fields.map(optfields => Json.obj("fields" -> optfields.mkString(","))).getOrElse(Json.obj())
       data ++ fieldProp
     }
-    val docs = Json.obj("docs" -> JsArray(for (req <- gets) yield (getJson(req))))
+    val docs = Json.obj("docs" -> JsArray(for (req <- multigets.build.getItems) yield (getJson(req))))
     val url = serviceUrl + "/_mget"
 
     RequestInfo(Get, url, docs.toString)

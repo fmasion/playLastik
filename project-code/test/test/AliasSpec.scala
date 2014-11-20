@@ -15,7 +15,7 @@ import scala.concurrent.duration._
 
 @RunWith(classOf[JUnitRunner])
 class AliasSpec extends Specification with PlaySpecification {
-  val log = Logger("AliasSpec")
+  val log = Logger("test.AliasSpec")
   sequential
 
   "A alias creation request" should {

@@ -1,6 +1,6 @@
 package playlastik.elasticSearchException
 
-class ElasticSearchException(msg : String) extends RuntimeException
+class ElasticSearchException(msg : String) extends RuntimeException(msg)
 
 case class ActionRequestValidationException(msg : String) extends ElasticSearchException(msg)
 case class BenchmarkExecutionException(msg : String) extends ElasticSearchException(msg)

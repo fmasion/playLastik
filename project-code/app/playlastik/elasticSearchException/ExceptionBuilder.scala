@@ -183,7 +183,7 @@ object ExceptionBuilder {
   val RestTestParseExceptionP = "^RestTestParseException\\[(.*)\\]".r
 
   def getException(failure : ESFailure) = {
-    failure.error match {
+    failure.error.replaceAll(";", "").trim() match {
       case ActionRequestValidationExceptionP(msg) => 	throw new 	 ActionRequestValidationException(msg)
       case BenchmarkExecutionExceptionP(msg) => 	throw new 	 BenchmarkExecutionException(msg)
       case BenchmarkMissingExceptionP(msg) => 	throw new 	 BenchmarkMissingException(msg)
@@ -357,7 +357,7 @@ object ExceptionBuilder {
       case SearchWithRandomExceptionsTestsP(msg) => 	throw new 	 SearchWithRandomExceptionsTests(msg)
       case RestExceptionP(msg) => 	throw new 	 RestException(msg)
       case RestTestParseExceptionP(msg) => 	throw new 	 RestTestParseException(msg)
-      case _ => throw new 	 ElasticSearchException(failure.error)
+      case _ => throw new ElasticSearchException(""+failure)
     }
 
 

@@ -1,11 +1,9 @@
 package playlastik
 
 import com.sksamuel.elastic4s.ElasticDsl._
-import play.api.Logger
-import play.api.libs.json.Json
-import playlastik.models.SearchResponse
-import playlastik.dslHelper.SearchHelper
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import playlastik.dslHelper.SearchHelper
+import playlastik.models.SearchResponse
 
 import scala.concurrent.Future
 
@@ -19,7 +17,7 @@ trait SearchRequest {
     val reqInfo = SearchHelper.getRequestInfo(serviceUrl, req)
     val wsResp = doCall(reqInfo)
     wsResp.map{j =>
-      //Logger.error(""+j)
+      //log.error(""+j)
       j.as[SearchResponse]
     }
   }

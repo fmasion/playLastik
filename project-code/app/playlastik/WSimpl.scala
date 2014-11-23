@@ -44,7 +44,6 @@ trait WSimpl {
   }
 
   def doCall(reqInfo: RequestInfo): Future[JsValue] = {
-    log.debug(s"verb : ${reqInfo.method} \nurl : ${reqInfo.url} \nbody : ${reqInfo.body} \nparams : ${reqInfo.queryParams}")
     val rh = if (authentificationName.equalsIgnoreCase("NONE")) {
       WS.url(reqInfo.url)(app).withQueryString(reqInfo.queryParams: _*)
     } else {
@@ -68,10 +67,13 @@ trait WSimpl {
       val j = Try(Json.parse(resp.body)).getOrElse(Json.obj("status" -> resp.status))
       j.asOpt[ESFailure] match {
         case Some(failure) => {
-          log.error(s"verb : ${reqInfo.method} \nurl : ${reqInfo.url} \nbody : ${reqInfo.body} \nparams : ${reqInfo.queryParams}")
+          log.error(s"verb : ${reqInfo.method} \nurl : ${reqInfo.url} \nbody : ${reqInfo.body} \nparams : ${reqInfo.queryParams} \nfailure : ${failure}")
           ExceptionBuilder.getException(failure)
         }
-        case None  => j
+        case None  => {
+          log.debug(s"verb : ${reqInfo.method} \nurl : ${reqInfo.url} \nbody : ${reqInfo.body} \nparams : ${reqInfo.queryParams} \nresponse : ${j}")
+          j
+        }
       }
     }
 

@@ -360,8 +360,6 @@ object ExceptionBuilder {
       case _ => throw new ElasticSearchException(""+failure)
     }
 
-
-
   }
 
 }

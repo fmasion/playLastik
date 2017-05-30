@@ -1,7 +1,7 @@
 #PlayLastiK
 
 ## Playframework 2.3.x / Dead Simple ElasticSearch integration
-## Integration with ElasticSearch 1.4.0
+## Integration with ElasticSearch 1.7.0
 =========
 
 # Why this plugin ?
@@ -33,7 +33,7 @@ In your application, add this configuration to the `project/Build.scala` file :
 
 add this dependency for play 2.3.x :
 
-	"playlastik"  % "playlastik_2.10" % "1.4.0.1"
+	"playlastik"  % "playlastik_2.10" % "1.7.0.1"
 
 add this resolver :
 

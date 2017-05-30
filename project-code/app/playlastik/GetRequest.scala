@@ -24,7 +24,7 @@ trait GetRequest {
   }
 
   def execute[T](req: GetDefinition)(implicit reads: Reads[T]): Future[Option[T]] = {
-    val reqInfo = GetHelper.getRequestInfo(serviceUrl, req, false)
+    val reqInfo = GetHelper.getRequestInfo(serviceUrl, req, true)
     doCall(reqInfo).map(_.asOpt[T])
   }
 
